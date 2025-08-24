@@ -1,0 +1,1411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>StatBot Calculator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <style>
+        body {
+             background: linear-gradient(135deg, #090808 0%, #825ba9 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .main-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            margin: 20px;
+            padding: 30px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+             background: linear-gradient(135deg, #090808 0%, #825ba9 100%);
+            -webkit-background-clip: text;
+            
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        /* Tab Styles */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 10px;
+        }
+        
+        .tab-button {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #495057;
+            font-weight: 500;
+            text-decoration: none;
+        }
+        
+        .tab-button.active {
+            background: #007bff;
+            border-color: #007bff;
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+        }
+        
+        .tab-button:hover:not(.active) {
+            background: #e9ecef;
+            border-color: #adb5bd;
+            transform: translateY(-1px);
+        }
+        
+        /* Tab Content */
+        .tab-panel {
+            display: none;
+        }
+        
+        .tab-panel.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Main Content Layout */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .calculator-section {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .formula-section {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        /* Form Styling */
+        .form-select, .form-control {
+            border: 2px solid #e0e6ed;
+            border-radius: 10px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-select:focus, .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+        
+        .btn-calculate {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        
+        .btn-calculate:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* Result Display */
+        .result-display {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+        }
+        
+        /* Formula Cards */
+        .formula-cards-container h4 {
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .formula-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        .formula-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .formula-card h5 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        
+        .formula-card p {
+            margin: 0;
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .delay-1 { animation-delay: 0.1s; }
+        .delay-2 { animation-delay: 0.2s; }
+        .delay-3 { animation-delay: 0.3s; }
+        
+        /* Chart Container */
+        #plotContainer {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .main-container {
+                margin: 10px;
+                padding: 20px;
+            }
+            
+            .tabs {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            
+            .tab-button {
+                font-size: 14px;
+                padding: 10px 16px;
+            }
+        }
+        
+        /* Statistical Table Styles */
+        .stat-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            font-size: 0.85em;
+        }
+        
+        .stat-table th {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .stat-table td {
+            padding: 6px 8px;
+            text-align: center;
+            border: 1px solid #e0e6ed;
+            transition: all 0.2s ease;
+        }
+        
+        .stat-table td:hover {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .stat-table .highlighted {
+            background: #ffd700 !important;
+            font-weight: bold;
+            color: #333;
+            box-shadow: inset 0 0 0 2px #ff6b35;
+        }
+        
+        .table-container {
+            max-height: 400px;
+            overflow: auto;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+        }
+        
+        .table-legend {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            font-size: 0.85em;
+        }
+        
+        .legend-item {
+            display: inline-block;
+            margin-right: 15px;
+        }
+        
+        .legend-color {
+            display: inline-block;
+            width: 15px;
+            height: 15px;
+            margin-right: 5px;
+            vertical-align: middle;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="main-container">
+            <div class="header">
+                <h1> Welcome to Statistical Calculator</h1>
+                <p class="text-muted">Select a module below to get started</p>
+            </div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-button active" onclick="showTab(event, 'desc')">Descriptive Stats</button>
+                <button class="tab-button" onclick="showTab(event, 'prob')">Probability</button>
+                <button class="tab-button" onclick="showTab(event, 'table')">Statistical Tables</button>
+            </div>
+
+            <!-- Tab Content -->
+            <div class="tab-content">
+                <!-- Descriptive Tab -->
+                <div id="desc" class="tab-panel active">
+                    <h3 class="text-center mb-4">📈 Descriptive Statistics</h3>
+                    
+                    <div class="content-grid">
+                        <!-- Calculator Section -->
+                        <div class="calculator-section">
+                            <h4 class="mb-3">Calculate Statistics</h4>
+                            <form id="statForm">
+                                <div class="mb-3">
+                                    <label for="operationSelect" class="form-label">Select Measure</label>
+                                    <select id="operationSelect" class="form-select">
+                                        <option value="">-- Choose a Measure --</option>
+                                        <option value="mean">Mean</option>
+                                        <option value="median">Median</option>
+                                        <option value="mode">Mode</option>
+                                        <option value="variance">Variance</option>
+                                        <option value="stddev">Standard Deviation</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="dataInput" class="form-label">Enter Data</label>
+                                    <input type="text" id="dataInput" class="form-control" 
+                                           placeholder="Enter comma-separated values (e.g. 4,5,6,7)" />
+                                </div>
+                                
+                                <button type="submit" class="btn btn-calculate">Calculate</button>
+                            </form>
+                            
+                            <!-- Result -->
+                            <div id="result" class="result-display hidden"></div>
+                        </div>
+                        
+                        <!-- Formula Section -->
+                        <div class="formula-section">
+                            <div class="formula-cards-container">
+                                <h4>📚 Formula Cards</h4>
+                                <div id="formulaStack">
+                                    <div class="text-center text-muted">
+                                        <p>Select a measure and calculate to see formula cards here</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Probability Tab -->
+                <div id="prob" class="tab-panel">
+                    <h3 class="text-center mb-4">🎲 Probability Distributions</h3>
+                    
+                    <div class="content-grid">
+                        <!-- Calculator Section -->
+                        <div class="calculator-section">
+                            <h4 class="mb-3">Calculate Probabilities</h4>
+                            <form id="probForm">
+                                <div class="mb-3">
+                                    <label for="distributionSelect" class="form-label">Select Distribution</label>
+                                    <select id="distributionSelect" class="form-select">
+                                        <option value="">-- Choose a Distribution --</option>
+                                        <option value="binomial">Binomial Distribution</option>
+                                        <option value="poisson">Poisson Distribution</option>
+                                        <option value="normal">Normal Distribution</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Parameters will be dynamically added here -->
+                                <div id="parametersContainer"></div>
+                                
+                                <button type="submit" class="btn btn-calculate">Calculate Probability</button>
+                            </form>
+                            
+                            <!-- Result -->
+                            <div id="probResult" class="result-display hidden"></div>
+                            
+                            <!-- Plot Container -->
+                            <div id="plotContainer" class="mt-4 hidden">
+                                <h5 class="text-center mb-3">📈 Probability Curve</h5>
+                                <canvas id="probabilityChart" width="400" height="300"></canvas>
+                            </div>
+                        </div>
+                        
+                        <!-- Formula Section -->
+                        <div class="formula-section">
+                            <div class="formula-cards-container">
+                                <h4>📚 Distribution Info</h4>
+                                <div id="probFormulaStack">
+                                    <div class="text-center text-muted">
+                                        <p>Select a distribution to see formulas and information</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Statistical Tables Tab -->
+                <div id="table" class="tab-panel">
+                    <h3 class="text-center mb-4">📑 Statistical Tables</h3>
+                    
+                    <div class="content-grid">
+                        <!-- Table Selector Section -->
+                        <div class="calculator-section">
+                            <h4 class="mb-3">Select Table & Parameters</h4>
+                            <form id="tableForm">
+                                <div class="mb-3">
+                                    <label for="tableSelect" class="form-label">Statistical Table</label>
+                                    <select id="tableSelect" class="form-select">
+                                        <option value="">-- Choose a Table --</option>
+                                        <option value="z">Z-Table (Standard Normal)</option>
+                                        <option value="t">T-Table (Student's t)</option>
+                                        <option value="f">F-Table (F-distribution)</option>
+                                        <option value="chi">Chi-Square Table (χ²)</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Parameters will be dynamically added here -->
+                                <div id="tableParametersContainer"></div>
+                                
+                                <button type="submit" class="btn btn-calculate">Find Critical Value</button>
+                            </form>
+                            
+                            <!-- Result -->
+                            <div id="tableResult" class="result-display hidden"></div>
+                        </div>
+                        
+                        <!-- Interactive Table Section -->
+                        <div class="formula-section">
+                            <div class="formula-cards-container">
+                                <h4>📊 Interactive Table</h4>
+                                <div id="statisticalTableContainer">
+                                    <div class="text-center text-muted">
+                                        <p>Select a table to view interactive statistical values</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Table Info Cards -->
+                    <div class="mt-4">
+                        <div id="tableInfoCards" class="row">
+                            <!-- Info cards will be added here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        function showTab(event, tabId) {
+            const buttons = document.querySelectorAll('.tab-button');
+            const panels = document.querySelectorAll('.tab-panel');
+
+            buttons.forEach(btn => btn.classList.remove('active'));
+            panels.forEach(panel => panel.classList.remove('active'));
+
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.getElementById("statForm");
+            const resultDiv = document.getElementById("result");
+            const formulaStack = document.getElementById("formulaStack");
+            
+            // Probability form elements
+            const probForm = document.getElementById("probForm");
+            const probResultDiv = document.getElementById("probResult");
+            const probFormulaStack = document.getElementById("probFormulaStack");
+            const distributionSelect = document.getElementById("distributionSelect");
+            const parametersContainer = document.getElementById("parametersContainer");
+            const plotContainer = document.getElementById("plotContainer");
+            
+            let probabilityChart = null;
+
+            // Probability distributions data
+            const distributionInfo = {
+                binomial: {
+                    description: "Binomial distribution models the number of successes in a fixed number of independent trials, each with the same probability of success.",
+                    formula: "P(X = k) = C(n,k) × p^k × (1-p)^(n-k)<br><small>Where n=trials, k=successes, p=probability</small>",
+                    parameters: [
+                        { name: "n", label: "Number of Trials", type: "number", min: 1, max: 100, placeholder: "e.g., 10" },
+                        { name: "p", label: "Probability of Success", type: "number", min: 0, max: 1, step: 0.01, placeholder: "e.g., 0.5" },
+                        { name: "k", label: "Number of Successes", type: "number", min: 0, placeholder: "e.g., 5" }
+                    ]
+                },
+                poisson: {
+                    description: "Poisson distribution models the number of events occurring in a fixed interval of time or space, given a known average rate.",
+                    formula: "P(X = k) = (λ^k × e^(-λ)) / k!<br><small>Where λ=average rate, k=number of events</small>",
+                    parameters: [
+                        { name: "lambda", label: "Average Rate (λ)", type: "number", min: 0.1, max: 50, step: 0.1, placeholder: "e.g., 3.5" },
+                        { name: "k", label: "Number of Events", type: "number", min: 0, placeholder: "e.g., 4" }
+                    ]
+                },
+                normal: {
+                    description: "Normal distribution is a continuous probability distribution characterized by a bell-shaped curve, defined by its mean and standard deviation.",
+                    formula: "P(X ≤ x) = Φ((x - μ) / σ)<br><small>Where μ=mean, σ=standard deviation, Φ=standard normal CDF</small>",
+                    parameters: [
+                        { name: "mu", label: "Mean (μ)", type: "number", step: 0.1, placeholder: "e.g., 0" },
+                        { name: "sigma", label: "Standard Deviation (σ)", type: "number", min: 0.1, step: 0.1, placeholder: "e.g., 1" },
+                        { name: "x", label: "Value (x)", type: "number", step: 0.1, placeholder: "e.g., 1.5" }
+                    ]
+                }
+            };
+
+            // Distribution selection handler
+            distributionSelect.addEventListener("change", function() {
+                const distribution = this.value;
+                parametersContainer.innerHTML = "";
+                probFormulaStack.innerHTML = "";
+                probResultDiv.classList.add("hidden");
+                plotContainer.classList.add("hidden");
+
+                if (distribution && distributionInfo[distribution]) {
+                    // Generate parameter inputs
+                    const params = distributionInfo[distribution].parameters;
+                    params.forEach(param => {
+                        const div = document.createElement("div");
+                        div.className = "mb-3";
+                        div.innerHTML = `
+                            <label for="${param.name}" class="form-label">${param.label}</label>
+                            <input type="${param.type}" id="${param.name}" class="form-control" 
+                                   placeholder="${param.placeholder}" 
+                                   ${param.min !== undefined ? `min="${param.min}"` : ''}
+                                   ${param.max !== undefined ? `max="${param.max}"` : ''}
+                                   ${param.step !== undefined ? `step="${param.step}"` : ''} required>
+                        `;
+                        parametersContainer.appendChild(div);
+                    });
+
+                    // Show distribution info cards
+                    const info = distributionInfo[distribution];
+                    
+                    const descCard = document.createElement("div");
+                    descCard.className = "formula-card delay-1";
+                    descCard.innerHTML = `<h5>📖 Description</h5><p>${info.description}</p>`;
+
+                    const formulaCard = document.createElement("div");
+                    formulaCard.className = "formula-card delay-2";
+                    formulaCard.innerHTML = `<h5>🧮 Formula</h5><p>${info.formula}</p>`;
+
+                    probFormulaStack.appendChild(descCard);
+                    probFormulaStack.appendChild(formulaCard);
+                }
+            });
+
+            // Probability calculation functions
+            function binomialProbability(n, k, p) {
+                function combination(n, k) {
+                    if (k > n || k < 0) return 0;
+                    if (k === 0 || k === n) return 1;
+                    let result = 1;
+                    for (let i = 1; i <= k; i++) {
+                        result = result * (n - k + i) / i;
+                    }
+                    return result;
+                }
+                return combination(n, k) * Math.pow(p, k) * Math.pow(1 - p, n - k);
+            }
+
+            function poissonProbability(lambda, k) {
+                function factorial(n) {
+                    if (n <= 1) return 1;
+                    let result = 1;
+                    for (let i = 2; i <= n; i++) {
+                        result *= i;
+                    }
+                    return result;
+                }
+                return (Math.pow(lambda, k) * Math.exp(-lambda)) / factorial(k);
+            }
+
+            function normalCDF(x, mu = 0, sigma = 1) {
+                const z = (x - mu) / sigma;
+                const a1 =  0.254829592;
+                const a2 = -0.284496736;
+                const a3 =  1.421413741;
+                const a4 = -1.453152027;
+                const a5 =  1.061405429;
+                const p  =  0.3275911;
+
+                const sign = z < 0 ? -1 : 1;
+                const absZ = Math.abs(z);
+                
+                const t = 1.0 / (1.0 + p * absZ);
+                const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-absZ * absZ);
+
+                return 0.5 * (1.0 + sign * y);
+            }
+
+            function createProbabilityChart(distribution, params) {
+                const ctx = document.getElementById('probabilityChart').getContext('2d');
+                
+                if (probabilityChart) {
+                    probabilityChart.destroy();
+                }
+
+                let data = [];
+                let labels = [];
+                let chartTitle = '';
+
+                if (distribution === 'binomial') {
+                    chartTitle = `Binomial Distribution (n=${params.n}, p=${params.p})`;
+                    for (let k = 0; k <= params.n; k++) {
+                        labels.push(k);
+                        data.push(binomialProbability(params.n, k, params.p));
+                    }
+                } else if (distribution === 'poisson') {
+                    chartTitle = `Poisson Distribution (λ=${params.lambda})`;
+                    const maxK = Math.min(20, params.lambda * 3);
+                    for (let k = 0; k <= maxK; k++) {
+                        labels.push(k);
+                        data.push(poissonProbability(params.lambda, k));
+                    }
+                } else if (distribution === 'normal') {
+                    chartTitle = `Normal Distribution (μ=${params.mu}, σ=${params.sigma})`;
+                    const start = params.mu - 4 * params.sigma;
+                    const end = params.mu + 4 * params.sigma;
+                    const step = (end - start) / 100;
+                    
+                    for (let x = start; x <= end; x += step) {
+                        labels.push(x.toFixed(2));
+                        const pdf = (1 / (params.sigma * Math.sqrt(2 * Math.PI))) * 
+                                   Math.exp(-0.5 * Math.pow((x - params.mu) / params.sigma, 2));
+                        data.push(pdf);
+                    }
+                }
+
+                probabilityChart = new Chart(ctx, {
+                    type: distribution === 'normal' ? 'line' : 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Probability',
+                            data: data,
+                            backgroundColor: distribution === 'normal' ? 'rgba(54, 162, 235, 0.2)' : 'rgba(54, 162, 235, 0.8)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 2,
+                            fill: distribution === 'normal'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: chartTitle
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: distribution === 'normal' ? 'Density' : 'Probability'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: distribution === 'normal' ? 'Value' : 'Outcome'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Probability form submission
+            probForm.addEventListener("submit", function(e) {
+                e.preventDefault();
+                
+                const distribution = distributionSelect.value;
+                if (!distribution) {
+                    alert("Please select a distribution.");
+                    return;
+                }
+
+                const params = {};
+                const paramInputs = parametersContainer.querySelectorAll('input');
+                for (let input of paramInputs) {
+                    const value = parseFloat(input.value);
+                    if (isNaN(value)) {
+                        alert(`Please enter a valid value for ${input.previousElementSibling.textContent}`);
+                        return;
+                    }
+                    params[input.id] = value;
+                }
+
+                let result;
+                let explanation = '';
+
+                try {
+                    switch (distribution) {
+                        case 'binomial':
+                            if (params.k > params.n) {
+                                alert("Number of successes cannot exceed number of trials.");
+                                return;
+                            }
+                            result = binomialProbability(params.n, params.k, params.p);
+                            explanation = `P(X = ${params.k}) = C(${params.n},${params.k}) × ${params.p}^${params.k} × (1-${params.p})^${params.n-params.k}`;
+                            break;
+                            
+                        case 'poisson':
+                            result = poissonProbability(params.lambda, params.k);
+                            explanation = `P(X = ${params.k}) = (${params.lambda}^${params.k} × e^(-${params.lambda})) / ${params.k}!`;
+                            break;
+                            
+                        case 'normal':
+                            result = normalCDF(params.x, params.mu, params.sigma);
+                            explanation = `P(X ≤ ${params.x}) = Φ((${params.x} - ${params.mu}) / ${params.sigma})`;
+                            break;
+                    }
+
+                    probResultDiv.innerHTML = `
+                        <strong>Result:</strong> ${result.toFixed(6)}<br>
+                        <small>${explanation}</small>
+                    `;
+                    probResultDiv.classList.remove("hidden");
+
+                    plotContainer.classList.remove("hidden");
+                    createProbabilityChart(distribution, params);
+
+                    const stepCard = document.createElement("div");
+                    stepCard.className = "formula-card delay-3";
+                    stepCard.innerHTML = `
+                        <h5>🧮 Calculation</h5>
+                        <p><strong>Parameters:</strong><br>
+                        ${Object.entries(params).map(([key, value]) => `${key}: ${value}`).join('<br>')}</p>
+                        <p><strong>Result:</strong> ${result.toFixed(6)}</p>
+                        <p><strong>Formula Used:</strong><br>${explanation}</p>
+                    `;
+                    probFormulaStack.appendChild(stepCard);
+
+                } catch (error) {
+                    alert("Error in calculation: " + error.message);
+                }
+            });
+
+            // Statistical Tables form elements
+            const tableForm = document.getElementById("tableForm");
+            const tableSelect = document.getElementById("tableSelect");
+            const tableParametersContainer = document.getElementById("tableParametersContainer");
+            const tableResult = document.getElementById("tableResult");
+            const statisticalTableContainer = document.getElementById("statisticalTableContainer");
+            const tableInfoCards = document.getElementById("tableInfoCards");
+
+            // Statistical table data and info
+            const tableInfo = {
+                z: {
+                    name: "Z-Table (Standard Normal Distribution)",
+                    description: "Used to find critical values and probabilities for the standard normal distribution (mean=0, std=1).",
+                    usage: "Commonly used in hypothesis testing, confidence intervals, and standardizing normal distributions.",
+                    parameters: [
+                        { name: "alpha", label: "Significance Level (α)", type: "select", 
+                          options: [
+                            { value: "0.1", text: "0.10 (90% confidence)" },
+                            { value: "0.05", text: "0.05 (95% confidence)" },
+                            { value: "0.01", text: "0.01 (99% confidence)" }
+                          ]
+                        },
+                        { name: "tails", label: "Test Type", type: "select",
+                          options: [
+                            { value: "two", text: "Two-tailed test" },
+                            { value: "one", text: "One-tailed test" }
+                          ]
+                        }
+                    ]
+                },
+                t: {
+                    name: "T-Table (Student's t-Distribution)",
+                    description: "Used when sample size is small or population standard deviation is unknown.",
+                    usage: "Essential for t-tests, confidence intervals for means, and regression analysis.",
+                    parameters: [
+                        { name: "df", label: "Degrees of Freedom", type: "number", min: 1, max: 100, placeholder: "e.g., 10" },
+                        { name: "alpha", label: "Significance Level (α)", type: "select",
+                          options: [
+                            { value: "0.1", text: "0.10 (90% confidence)" },
+                            { value: "0.05", text: "0.05 (95% confidence)" },
+                            { value: "0.01", text: "0.01 (99% confidence)" }
+                          ]
+                        },
+                        { name: "tails", label: "Test Type", type: "select",
+                          options: [
+                            { value: "two", text: "Two-tailed test" },
+                            { value: "one", text: "One-tailed test" }
+                          ]
+                        }
+                    ]
+                },
+                f: {
+                    name: "F-Table (F-Distribution)",
+                    description: "Used to compare variances between groups, essential for ANOVA and regression testing.",
+                    usage: "Primary tool for F-tests, ANOVA, and testing equality of variances.",
+                    parameters: [
+                        { name: "df1", label: "Numerator df", type: "number", min: 1, max: 50, placeholder: "e.g., 3" },
+                        { name: "df2", label: "Denominator df", type: "number", min: 1, max: 100, placeholder: "e.g., 10" },
+                        { name: "alpha", label: "Significance Level (α)", type: "select",
+                          options: [
+                            { value: "0.05", text: "0.05 (95% confidence)" },
+                            { value: "0.01", text: "0.01 (99% confidence)" }
+                          ]
+                        }
+                    ]
+                },
+                chi: {
+                    name: "Chi-Square Table (χ² Distribution)",
+                    description: "Used for goodness-of-fit tests, tests of independence, and variance testing.",
+                    usage: "Essential for categorical data analysis and testing distributional assumptions.",
+                    parameters: [
+                        { name: "df", label: "Degrees of Freedom", type: "number", min: 1, max: 30, placeholder: "e.g., 5" },
+                        { name: "alpha", label: "Significance Level (α)", type: "select",
+                          options: [
+                            { value: "0.1", text: "0.10" },
+                            { value: "0.05", text: "0.05" },
+                            { value: "0.01", text: "0.01" }
+                          ]
+                        }
+                    ]
+                }
+            };
+// Critical values data - comprehensive tables
+            // Critical values data - comprehensive tables
+            const criticalValues = {
+                z: {
+                    "0.05": { "one": 1.645, "two": 1.96 },
+                    "0.01": { "one": 2.326, "two": 2.576 },
+                    "0.1": { "one": 1.282, "two": 1.645 }
+                },
+                t: {
+                    1: { "0.05": { "one": 6.314, "two": 12.706 }, "0.01": { "one": 31.821, "two": 63.657 }, "0.1": { "one": 3.078, "two": 6.314 } },
+                    2: { "0.05": { "one": 2.920, "two": 4.303 }, "0.01": { "one": 6.965, "two": 9.925 }, "0.1": { "one": 1.886, "two": 2.920 } },
+                    3: { "0.05": { "one": 2.353, "two": 3.182 }, "0.01": { "one": 4.541, "two": 5.841 }, "0.1": { "one": 1.638, "two": 2.353 } },
+                    4: { "0.05": { "one": 2.132, "two": 2.776 }, "0.01": { "one": 3.747, "two": 4.604 }, "0.1": { "one": 1.533, "two": 2.132 } },
+                    5: { "0.05": { "one": 2.015, "two": 2.571 }, "0.01": { "one": 3.365, "two": 4.032 }, "0.1": { "one": 1.476, "two": 2.015 } },
+                    6: { "0.05": { "one": 1.943, "two": 2.447 }, "0.01": { "one": 3.143, "two": 3.707 }, "0.1": { "one": 1.440, "two": 1.943 } },
+                    7: { "0.05": { "one": 1.895, "two": 2.365 }, "0.01": { "one": 2.998, "two": 3.499 }, "0.1": { "one": 1.415, "two": 1.895 } },
+                    8: { "0.05": { "one": 1.860, "two": 2.306 }, "0.01": { "one": 2.896, "two": 3.355 }, "0.1": { "one": 1.397, "two": 1.860 } },
+                    9: { "0.05": { "one": 1.833, "two": 2.262 }, "0.01": { "one": 2.821, "two": 3.250 }, "0.1": { "one": 1.383, "two": 1.833 } },
+                    10: { "0.05": { "one": 1.812, "two": 2.228 }, "0.01": { "one": 2.764, "two": 3.169 }, "0.1": { "one": 1.372, "two": 1.812 } },
+                    11: { "0.05": { "one": 1.796, "two": 2.201 }, "0.01": { "one": 2.718, "two": 3.106 }, "0.1": { "one": 1.363, "two": 1.796 } },
+                    12: { "0.05": { "one": 1.782, "two": 2.179 }, "0.01": { "one": 2.681, "two": 3.055 }, "0.1": { "one": 1.356, "two": 1.782 } },
+                    13: { "0.05": { "one": 1.771, "two": 2.160 }, "0.01": { "one": 2.650, "two": 3.012 }, "0.1": { "one": 1.350, "two": 1.771 } },
+                    14: { "0.05": { "one": 1.761, "two": 2.145 }, "0.01": { "one": 2.624, "two": 2.977 }, "0.1": { "one": 1.345, "two": 1.761 } },
+                    15: { "0.05": { "one": 1.753, "two": 2.131 }, "0.01": { "one": 2.602, "two": 2.947 }, "0.1": { "one": 1.341, "two": 1.753 } },
+                    16: { "0.05": { "one": 1.746, "two": 2.120 }, "0.01": { "one": 2.583, "two": 2.921 }, "0.1": { "one": 1.337, "two": 1.746 } },
+                    17: { "0.05": { "one": 1.740, "two": 2.110 }, "0.01": { "one": 2.567, "two": 2.898 }, "0.1": { "one": 1.333, "two": 1.740 } },
+                    18: { "0.05": { "one": 1.734, "two": 2.101 }, "0.01": { "one": 2.552, "two": 2.878 }, "0.1": { "one": 1.330, "two": 1.734 } },
+                    19: { "0.05": { "one": 1.729, "two": 2.093 }, "0.01": { "one": 2.539, "two": 2.861 }, "0.1": { "one": 1.328, "two": 1.729 } },
+                    20: { "0.05": { "one": 1.725, "two": 2.086 }, "0.01": { "one": 2.528, "two": 2.845 }, "0.1": { "one": 1.325, "two": 1.725 } },
+                    21: { "0.05": { "one": 1.721, "two": 2.080 }, "0.01": { "one": 2.518, "two": 2.831 }, "0.1": { "one": 1.323, "two": 1.721 } },
+                    22: { "0.05": { "one": 1.717, "two": 2.074 }, "0.01": { "one": 2.508, "two": 2.819 }, "0.1": { "one": 1.321, "two": 1.717 } },
+                    23: { "0.05": { "one": 1.714, "two": 2.069 }, "0.01": { "one": 2.500, "two": 2.807 }, "0.1": { "one": 1.319, "two": 1.714 } },
+                    24: { "0.05": { "one": 1.711, "two": 2.064 }, "0.01": { "one": 2.492, "two": 2.797 }, "0.1": { "one": 1.318, "two": 1.711 } },
+                    25: { "0.05": { "one": 1.708, "two": 2.060 }, "0.01": { "one": 2.485, "two": 2.787 }, "0.1": { "one": 1.316, "two": 1.708 } },
+                    26: { "0.05": { "one": 1.706, "two": 2.056 }, "0.01": { "one": 2.479, "two": 2.779 }, "0.1": { "one": 1.315, "two": 1.706 } },
+                    27: { "0.05": { "one": 1.703, "two": 2.052 }, "0.01": { "one": 2.473, "two": 2.771 }, "0.1": { "one": 1.314, "two": 1.703 } },
+                    28: { "0.05": { "one": 1.701, "two": 2.048 }, "0.01": { "one": 2.467, "two": 2.763 }, "0.1": { "one": 1.313, "two": 1.701 } },
+                    29: { "0.05": { "one": 1.699, "two": 2.045 }, "0.01": { "one": 2.462, "two": 2.756 }, "0.1": { "one": 1.311, "two": 1.699 } },
+                    30: { "0.05": { "one": 1.697, "two": 2.042 }, "0.01": { "one": 2.457, "two": 2.750 }, "0.1": { "one": 1.310, "two": 1.697 } },
+                    35: { "0.05": { "one": 1.690, "two": 2.030 }, "0.01": { "one": 2.438, "two": 2.724 }, "0.1": { "one": 1.306, "two": 1.690 } },
+                    40: { "0.05": { "one": 1.684, "two": 2.021 }, "0.01": { "one": 2.423, "two": 2.704 }, "0.1": { "one": 1.303, "two": 1.684 } },
+                    45: { "0.05": { "one": 1.679, "two": 2.014 }, "0.01": { "one": 2.412, "two": 2.690 }, "0.1": { "one": 1.301, "two": 1.679 } },
+                    50: { "0.05": { "one": 1.676, "two": 2.009 }, "0.01": { "one": 2.403, "two": 2.678 }, "0.1": { "one": 1.299, "two": 1.676 } },
+                    60: { "0.05": { "one": 1.671, "two": 2.000 }, "0.01": { "one": 2.390, "two": 2.660 }, "0.1": { "one": 1.296, "two": 1.671 } },
+                    70: { "0.05": { "one": 1.667, "two": 1.994 }, "0.01": { "one": 2.381, "two": 2.648 }, "0.1": { "one": 1.294, "two": 1.667 } },
+                    80: { "0.05": { "one": 1.664, "two": 1.990 }, "0.01": { "one": 2.374, "two": 2.639 }, "0.1": { "one": 1.292, "two": 1.664 } },
+                    90: { "0.05": { "one": 1.662, "two": 1.987 }, "0.01": { "one": 2.368, "two": 2.632 }, "0.1": { "one": 1.291, "two": 1.662 } },
+                    100: { "0.05": { "one": 1.660, "two": 1.984 }, "0.01": { "one": 2.364, "two": 2.626 }, "0.1": { "one": 1.290, "two": 1.660 } }
+                },
+                f: {
+                    // F-critical values: [df1][df2][alpha]
+                    1: {
+                        1: { "0.05": 161.45, "0.01": 4052.18 },
+                        2: { "0.05": 18.51, "0.01": 98.50 },
+                        3: { "0.05": 10.13, "0.01": 34.12 },
+                        4: { "0.05": 7.71, "0.01": 21.20 },
+                        5: { "0.05": 6.61, "0.01": 16.26 },
+                        10: { "0.05": 4.96, "0.01": 10.04 },
+                        15: { "0.05": 4.54, "0.01": 8.68 },
+                        20: { "0.05": 4.35, "0.01": 8.10 },
+                        30: { "0.05": 4.17, "0.01": 7.56 },
+                        60: { "0.05": 4.00, "0.01": 7.08 },
+                        120: { "0.05": 3.92, "0.01": 6.85 }
+                    },
+                    2: {
+                        1: { "0.05": 199.50, "0.01": 4999.50 },
+                        2: { "0.05": 19.00, "0.01": 99.00 },
+                        3: { "0.05": 9.55, "0.01": 30.82 },
+                        4: { "0.05": 6.94, "0.01": 18.00 },
+                        5: { "0.05": 5.79, "0.01": 13.27 },
+                        10: { "0.05": 4.10, "0.01": 7.56 },
+                        15: { "0.05": 3.68, "0.01": 6.36 },
+                        20: { "0.05": 3.49, "0.01": 5.85 },
+                        30: { "0.05": 3.32, "0.01": 5.39 },
+                        60: { "0.05": 3.15, "0.01": 4.98 },
+                        120: { "0.05": 3.07, "0.01": 4.79 }
+                    },
+                    3: {
+                        1: { "0.05": 215.71, "0.01": 5403.35 },
+                        2: { "0.05": 19.16, "0.01": 99.17 },
+                        3: { "0.05": 9.28, "0.01": 29.46 },
+                        4: { "0.05": 6.59, "0.01": 16.69 },
+                        5: { "0.05": 5.41, "0.01": 12.06 },
+                        10: { "0.05": 3.71, "0.01": 6.55 },
+                        15: { "0.05": 3.29, "0.01": 5.42 },
+                        20: { "0.05": 3.10, "0.01": 4.94 },
+                        30: { "0.05": 2.92, "0.01": 4.51 },
+                        60: { "0.05": 2.76, "0.01": 4.13 },
+                        120: { "0.05": 2.68, "0.01": 3.95 }
+                    },
+                    4: {
+                        1: { "0.05": 224.58, "0.01": 5624.58 },
+                        2: { "0.05": 19.25, "0.01": 99.25 },
+                        3: { "0.05": 9.12, "0.01": 28.71 },
+                        4: { "0.05": 6.39, "0.01": 15.98 },
+                        5: { "0.05": 5.19, "0.01": 11.39 },
+                        10: { "0.05": 3.48, "0.01": 5.99 },
+                        15: { "0.05": 3.06, "0.01": 4.89 },
+                        20: { "0.05": 2.87, "0.01": 4.43 },
+                        30: { "0.05": 2.69, "0.01": 4.02 },
+                        60: { "0.05": 2.53, "0.01": 3.65 },
+                        120: { "0.05": 2.45, "0.01": 3.48 }
+                    },
+                    5: {
+                        1: { "0.05": 230.16, "0.01": 5763.65 },
+                        2: { "0.05": 19.30, "0.01": 99.30 },
+                        3: { "0.05": 9.01, "0.01": 28.24 },
+                        4: { "0.05": 6.26, "0.01": 15.52 },
+                        5: { "0.05": 5.05, "0.01": 10.97 },
+                        10: { "0.05": 3.33, "0.01": 5.64 },
+                        15: { "0.05": 2.90, "0.01": 4.56 },
+                        20: { "0.05": 2.71, "0.01": 4.10 },
+                        30: { "0.05": 2.53, "0.01": 3.70 },
+                        60: { "0.05": 2.37, "0.01": 3.34 },
+                        120: { "0.05": 2.29, "0.01": 3.17 }
+                    },
+                    10: {
+                        1: { "0.05": 241.88, "0.01": 6055.85 },
+                        2: { "0.05": 19.40, "0.01": 99.40 },
+                        3: { "0.05": 8.79, "0.01": 27.23 },
+                        4: { "0.05": 5.96, "0.01": 14.55 },
+                        5: { "0.05": 4.74, "0.01": 10.05 },
+                        10: { "0.05": 2.98, "0.01": 4.85 },
+                        15: { "0.05": 2.54, "0.01": 3.80 },
+                        20: { "0.05": 2.35, "0.01": 3.37 },
+                        30: { "0.05": 2.16, "0.01": 2.98 },
+                        60: { "0.05": 1.99, "0.01": 2.63 },
+                        120: { "0.05": 1.91, "0.01": 2.47 }
+                    },
+                    15: {
+                        1: { "0.05": 245.95, "0.01": 6157.28 },
+                        2: { "0.05": 19.43, "0.01": 99.43 },
+                        3: { "0.05": 8.70, "0.01": 26.87 },
+                        4: { "0.05": 5.86, "0.01": 14.20 },
+                        5: { "0.05": 4.62, "0.01": 9.72 },
+                        10: { "0.05": 2.85, "0.01": 4.56 },
+                        15: { "0.05": 2.40, "0.01": 3.52 },
+                        20: { "0.05": 2.20, "0.01": 3.09 },
+                        30: { "0.05": 2.01, "0.01": 2.70 },
+                        60: { "0.05": 1.84, "0.01": 2.35 },
+                        120: { "0.05": 1.75, "0.01": 2.19 }
+                    },
+                    20: {
+                        1: { "0.05": 248.01, "0.01": 6208.73 },
+                        2: { "0.05": 19.45, "0.01": 99.45 },
+                        3: { "0.05": 8.66, "0.01": 26.69 },
+                        4: { "0.05": 5.80, "0.01": 14.02 },
+                        5: { "0.05": 4.56, "0.01": 9.55 },
+                        10: { "0.05": 2.77, "0.01": 4.41 },
+                        15: { "0.05": 2.33, "0.01": 3.37 },
+                        20: { "0.05": 2.12, "0.01": 2.94 },
+                        30: { "0.05": 1.93, "0.01": 2.55 },
+                        60: { "0.05": 1.75, "0.01": 2.20 },
+                        120: { "0.05": 1.66, "0.01": 2.03 }
+                    },
+                    30: {
+                        1: { "0.05": 250.10, "0.01": 6260.65 },
+                        2: { "0.05": 19.46, "0.01": 99.47 },
+                        3: { "0.05": 8.62, "0.01": 26.50 },
+                        4: { "0.05": 5.75, "0.01": 13.84 },
+                        5: { "0.05": 4.50, "0.01": 9.38 },
+                        10: { "0.05": 2.70, "0.01": 4.25 },
+                        15: { "0.05": 2.25, "0.01": 3.21 },
+                        20: { "0.05": 2.04, "0.01": 2.78 },
+                        30: { "0.05": 1.85, "0.01": 2.39 },
+                        60: { "0.05": 1.65, "0.01": 2.03 },
+                        120: { "0.05": 1.55, "0.01": 1.86 }
+                    }
+                },
+                chi: {
+                    1: { "0.05": 3.841, "0.01": 6.635, "0.1": 2.706 },
+                    2: { "0.05": 5.991, "0.01": 9.210, "0.1": 4.605 },
+                    3: { "0.05": 7.815, "0.01": 11.345, "0.1": 6.251 },
+                    4: { "0.05": 9.488, "0.01": 13.277, "0.1": 7.779 },
+                    5: { "0.05": 11.070, "0.01": 15.086, "0.1": 9.236 },
+                    6: { "0.05": 12.592, "0.01": 16.812, "0.1": 10.645 },
+                    7: { "0.05": 14.067, "0.01": 18.475, "0.1": 12.017 },
+                    8: { "0.05": 15.507, "0.01": 20.090, "0.1": 13.362 },
+                    9: { "0.05": 16.919, "0.01": 21.666, "0.1": 14.684 },
+                    10: { "0.05": 18.307, "0.01": 23.209, "0.1": 15.987 },
+                    11: { "0.05": 19.675, "0.01": 24.725, "0.1": 17.275 },
+                    12: { "0.05": 21.026, "0.01": 26.217, "0.1": 18.549 },
+                    13: { "0.05": 22.362, "0.01": 27.688, "0.1": 19.812 },
+                    14: { "0.05": 23.685, "0.01": 29.141, "0.1": 21.064 },
+                    15: { "0.05": 24.996, "0.01": 30.578, "0.1": 22.307 },
+                    16: { "0.05": 26.296, "0.01": 32.000, "0.1": 23.542 },
+                    17: { "0.05": 27.587, "0.01": 33.409, "0.1": 24.769 },
+                    18: { "0.05": 28.869, "0.01": 34.805, "0.1": 25.989 },
+                    19: { "0.05": 30.144, "0.01": 36.191, "0.1": 27.204 },
+                    20: { "0.05": 31.410, "0.01": 37.566, "0.1": 28.412 },
+                    21: { "0.05": 32.671, "0.01": 38.932, "0.1": 29.615 },
+                    22: { "0.05": 33.924, "0.01": 40.289, "0.1": 30.813 },
+                    23: { "0.05": 35.172, "0.01": 41.638, "0.1": 32.007 },
+                    24: { "0.05": 36.415, "0.01": 42.980, "0.1": 33.196 },
+                    25: { "0.05": 37.652, "0.01": 44.314, "0.1": 34.382 },
+                    26: { "0.05": 38.885, "0.01": 45.642, "0.1": 35.563 },
+                    27: { "0.05": 40.113, "0.01": 46.963, "0.1": 36.741 },
+                    28: { "0.05": 41.337, "0.01": 48.278, "0.1": 37.916 },
+                    29: { "0.05": 42.557, "0.01": 49.588, "0.1": 39.087 },
+                    30: { "0.05": 43.773, "0.01": 50.892, "0.1": 40.256 }
+                }
+            }
+            
+
+            // Table selection handler
+            tableSelect.addEventListener("change", function() {
+                const table = this.value;
+                tableParametersContainer.innerHTML = "";
+                statisticalTableContainer.innerHTML = "";
+                tableResult.classList.add("hidden");
+                tableInfoCards.innerHTML = "";
+
+                if (table && tableInfo[table]) {
+                    // Generate parameter inputs
+                    const params = tableInfo[table].parameters;
+                    params.forEach(param => {
+                        const div = document.createElement("div");
+                        div.className = "mb-3";
+                        
+                        if (param.type === "select") {
+                            div.innerHTML = `
+                                <label for="${param.name}" class="form-label">${param.label}</label>
+                                <select id="${param.name}" class="form-select" required>
+                                    <option value="">-- Select ${param.label} --</option>
+                                    ${param.options.map(opt => `<option value="${opt.value}">${opt.text}</option>`).join('')}
+                                </select>
+                            `;
+                        } else {
+                            div.innerHTML = `
+                                <label for="${param.name}" class="form-label">${param.label}</label>
+                                <input type="${param.type}" id="${param.name}" class="form-control" 
+                                       placeholder="${param.placeholder}" 
+                                       ${param.min !== undefined ? `min="${param.min}"` : ''}
+                                       ${param.max !== undefined ? `max="${param.max}"` : ''} required>
+                            `;
+                        }
+                        tableParametersContainer.appendChild(div);
+                    });
+
+                    // Show table info cards
+                    showTableInfo(table);
+                    
+                    // Generate initial table
+                    generateTable(table);
+                }
+            });
+
+            function showTableInfo(table) {
+                const info = tableInfo[table];
+                tableInfoCards.innerHTML = `
+                    <div class="col-md-6">
+                        <div class="formula-card">
+                            <h5>📖 Description</h5>
+                            <p>${info.description}</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="formula-card">
+                            <h5>🎯 Usage</h5>
+                            <p>${info.usage}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function generateTable(tableType) {
+                let tableHTML = '';
+                
+                if (tableType === 'z') {
+                    tableHTML = generateZTable();
+                } else if (tableType === 't') {
+                    tableHTML = generateTTable();
+                } else if (tableType === 'chi') {
+                    tableHTML = generateChiTable();
+                } else if (tableType === 'f') {
+                    tableHTML = '<div class="text-center text-muted mt-4"><p>F-table is quite large. Please select parameters to see relevant values.</p></div>';
+                }
+                
+                statisticalTableContainer.innerHTML = `
+                    <div class="table-container">
+                        ${tableHTML}
+                    </div>
+                    <div class="table-legend">
+                        <div class="legend-item">
+                            <span class="legend-color" style="background: #ffd700;"></span>
+                            Highlighted: Your critical value
+                        </div>
+                    </div>
+                `;
+            }
+
+            function generateZTable() {
+                let html = '<table class="stat-table"><thead><tr><th>α</th><th>One-tailed</th><th>Two-tailed</th></tr></thead><tbody>';
+                const alphas = ['0.10', '0.05', '0.01'];
+                const zValues = {
+                    '0.10': { one: '1.282', two: '1.645' },
+                    '0.05': { one: '1.645', two: '1.960' },
+                    '0.01': { one: '2.326', two: '2.576' }
+                };
+                
+                alphas.forEach(alpha => {
+                    html += `<tr>
+                        <td>${alpha}</td>
+                        <td id="z-${alpha}-one">${zValues[alpha].one}</td>
+                        <td id="z-${alpha}-two">${zValues[alpha].two}</td>
+                    </tr>`;
+                });
+                html += '</tbody></table>';
+                return html;
+            }
+
+            function generateTTable() {
+                let html = '<table class="stat-table"><thead><tr><th>df</th><th>α=0.10 (Two)</th><th>α=0.05 (Two)</th><th>α=0.01 (Two)</th></tr></thead><tbody>';
+                const dfs = [1, 2, 3, 4, 5, 10, 15, 20, 30];
+                
+                dfs.forEach(df => {
+                    const tVals = criticalValues.t[df];
+                    if (tVals) {
+                        html += `<tr>
+                            <td>${df}</td>
+                            <td id="t-${df}-0.1-two">${tVals['0.1'] ? tVals['0.1'].two.toFixed(3) : 'N/A'}</td>
+                            <td id="t-${df}-0.05-two">${tVals['0.05'].two.toFixed(3)}</td>
+                            <td id="t-${df}-0.01-two">${tVals['0.01'].two.toFixed(3)}</td>
+                        </tr>`;
+                    }
+                });
+                html += '</tbody></table>';
+                return html;
+            }
+
+            function generateChiTable() {
+                let html = '<table class="stat-table"><thead><tr><th>df</th><th>α=0.10</th><th>α=0.05</th><th>α=0.01</th></tr></thead><tbody>';
+                const dfs = [1, 2, 3, 4, 5, 10];
+                
+                dfs.forEach(df => {
+                    const chiVals = criticalValues.chi[df];
+                    if (chiVals) {
+                        html += `<tr>
+                            <td>${df}</td>
+                            <td id="chi-${df}-0.1">${chiVals['0.1'].toFixed(3)}</td>
+                            <td id="chi-${df}-0.05">${chiVals['0.05'].toFixed(3)}</td>
+                            <td id="chi-${df}-0.01">${chiVals['0.01'].toFixed(3)}</td>
+                        </tr>`;
+                    }
+                });
+                html += '</tbody></table>';
+                return html;
+            }
+
+            // Table form submission
+            tableForm.addEventListener("submit", function(e) {
+                e.preventDefault();
+                
+                const tableType = tableSelect.value;
+                if (!tableType) {
+                    alert("Please select a statistical table.");
+                    return;
+                }
+
+                // Get parameter values
+                const params = {};
+                const paramInputs = tableParametersContainer.querySelectorAll('input, select');
+                for (let input of paramInputs) {
+                    if (input.value === '') {
+                        alert(`Please enter a value for ${input.previousElementSibling.textContent}`);
+                        return;
+                    }
+                    params[input.id] = input.type === 'number' ? parseFloat(input.value) : input.value;
+                }
+
+                let result = null;
+                let cellId = '';
+
+                try {
+                    // Find critical value and highlight table cell
+                    if (tableType === 'z') {
+                        result = criticalValues.z[params.alpha][params.tails];
+                        cellId = `z-${params.alpha}-${params.tails}`;
+                    } else if (tableType === 't') {
+                        if (criticalValues.t[params.df] && criticalValues.t[params.df][params.alpha]) {
+                            result = criticalValues.t[params.df][params.alpha][params.tails];
+                            cellId = `t-${params.df}-${params.alpha}-${params.tails}`;
+                        }
+                    } else if (tableType === 'chi') {
+                        if (criticalValues.chi[params.df] && criticalValues.chi[params.df][params.alpha]) {
+                            result = criticalValues.chi[params.df][params.alpha];
+                            cellId = `chi-${params.df}-${params.alpha}`;
+                        }
+                    }
+
+                    if (result !== null) {
+                        // Clear previous highlights
+                        document.querySelectorAll('.highlighted').forEach(cell => {
+                            cell.classList.remove('highlighted');
+                        });
+
+                        // Highlight the specific cell
+                        const targetCell = document.getElementById(cellId);
+                        if (targetCell) {
+                            targetCell.classList.add('highlighted');
+                            targetCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+
+                        // Show result
+                        tableResult.innerHTML = `
+                            <strong>Critical Value:</strong> ${result.toFixed(4)}<br>
+                            <small>Parameters: ${Object.entries(params).map(([k,v]) => `${k}=${v}`).join(', ')}</small>
+                        `;
+                        tableResult.classList.remove("hidden");
+
+                    } else {
+                        alert("Critical value not found for the given parameters.");
+                    }
+
+                } catch (error) {
+                    alert("Error finding critical value: " + error.message);
+                }
+            });
+
+            const descriptions = {
+                mean: "Mean is the average of all values in a dataset. It's calculated by summing all values and dividing by the count.",
+                median: "Median is the middle value in a sorted list. If there are an even number of values, it's the average of the two middle values.",
+                mode: "Mode is the most frequently occurring value in a dataset. There can be multiple modes or no mode.",
+                variance: "Variance measures how spread out the data points are from the mean. It's the average of squared differences from the mean.",
+                stddev: "Standard deviation is the square root of variance. It measures the typical distance of data points from the mean."
+            };
+
+            const formulas = {
+                mean: "Mean (μ) = (Σx) / n<br><small>Where Σx is sum of all values, n is count</small>",
+                median: "Median = Middle value when sorted<br><small>If even count: (middle₁ + middle₂) / 2</small>",
+                mode: "Mode = Value(s) with highest frequency<br><small>The most commonly occurring value(s)</small>",
+                variance: "Variance (σ²) = Σ(x - μ)² / n<br><small>Where μ is mean, x is each value</small>",
+                stddev: "Standard Deviation (σ) = √Variance<br><small>σ = √(Σ(x - μ)² / n)</small>"
+            };
+
+            const steps = {
+                mean: (nums) => {
+                    const sum = nums.reduce((a, b) => a + b, 0);
+                    return `
+                        <strong>Step 1:</strong> Add all values<br>
+                        ${nums.join(" + ")} = ${sum}<br><br>
+                        <strong>Step 2:</strong> Divide by count<br>
+                        ${sum} ÷ ${nums.length} = ${(sum / nums.length).toFixed(4)}
+                    `;
+                },
+                median: (nums) => {
+                    const sorted = [...nums].sort((a, b) => a - b);
+                    const mid = Math.floor(sorted.length / 2);
+                    const isEven = sorted.length % 2 === 0;
+                    
+                    return `
+                        <strong>Step 1:</strong> Sort the values<br>
+                        ${sorted.join(", ")}<br><br>
+                        <strong>Step 2:</strong> Find middle value(s)<br>
+                        ${isEven ? 
+                            `Even count: (${sorted[mid-1]} + ${sorted[mid]}) ÷ 2 = ${((sorted[mid-1] + sorted[mid]) / 2).toFixed(4)}` :
+                            `Odd count: Middle value = ${sorted[mid]}`
+                        }
+                    `;
+                },
+                mode: (nums) => {
+                    const freq = {};
+                    nums.forEach(n => freq[n] = (freq[n] || 0) + 1);
+                    const maxFreq = Math.max(...Object.values(freq));
+                    
+                    return `
+                        <strong>Step 1:</strong> Count frequencies<br>
+                        ${Object.entries(freq).map(([val, count]) => `${val}: ${count} times`).join(", ")}<br><br>
+                        <strong>Step 2:</strong> Find highest frequency<br>
+                        Mode(s): ${Object.keys(freq).filter(k => freq[k] === maxFreq).join(", ")} (appears ${maxFreq} times)
+                    `;
+                },
+                variance: (nums) => {
+                    const mean = nums.reduce((a, b) => a + b, 0) / nums.length;
+                    const squaredDiffs = nums.map(x => Math.pow(x - mean, 2));
+                    const variance = squaredDiffs.reduce((a, b) => a + b, 0) / nums.length;
+                    
+                    return `
+                        <strong>Step 1:</strong> Calculate mean<br>
+                        μ = ${mean.toFixed(4)}<br><br>
+                        <strong>Step 2:</strong> Find squared differences<br>
+                        ${nums.map((x, i) => `(${x} - ${mean.toFixed(2)})² = ${squaredDiffs[i].toFixed(4)}`).join("<br>")}<br><br>
+                        <strong>Step 3:</strong> Average the squared differences<br>
+                        Variance = ${variance.toFixed(4)}
+                    `;
+                },
+                stddev: (nums) => {
+                    const mean = nums.reduce((a, b) => a + b, 0) / nums.length;
+                    const variance = nums.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / nums.length;
+                    
+                    return `
+                        <strong>Step 1:</strong> Calculate variance<br>
+                        σ² = ${variance.toFixed(4)}<br><br>
+                        <strong>Step 2:</strong> Take square root<br>
+                        σ = √${variance.toFixed(4)} = ${Math.sqrt(variance).toFixed(4)}
+                    `;
+                }
+            };
+
+            form.addEventListener("submit", function (e) {
+                e.preventDefault();
+
+                const dataStr = document.getElementById("dataInput").value;
+                const operation = document.getElementById("operationSelect").value;
+
+                if (!dataStr || !operation) {
+                    alert("Please select a measure and enter some values.");
+                    return;
+                }
+
+                const numbers = dataStr.split(",").map(num => parseFloat(num.trim())).filter(n => !isNaN(n));
+
+                if (numbers.length === 0) {
+                    alert("Please enter valid numbers.");
+                    return;
+                }
+
+                let result;
+                switch (operation) {
+                    case "mean":
+                        result = numbers.reduce((a, b) => a + b, 0) / numbers.length;
+                        break;
+                    case "median":
+                        const sorted = [...numbers].sort((a, b) => a - b);
+                        const mid = Math.floor(sorted.length / 2);
+                        result = sorted.length % 2 !== 0 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+                        break;
+                    case "mode":
+                        const freq = {};
+                        numbers.forEach(n => freq[n] = (freq[n] || 0) + 1);
+                        const maxFreq = Math.max(...Object.values(freq));
+                        result = Object.keys(freq).filter(k => freq[k] === maxFreq).join(", ");
+                        break;
+                    case "variance":
+                        const mean = numbers.reduce((a, b) => a + b, 0) / numbers.length;
+                        result = numbers.reduce((sum, x) => sum + Math.pow(x - mean, 2), 0) / numbers.length;
+                        break;
+                    case "stddev":
+                        const mean2 = numbers.reduce((a, b) => a + b, 0) / numbers.length;
+                        const variance = numbers.reduce((sum, x) => sum + Math.pow(x - mean2, 2), 0) / numbers.length;
+                        result = Math.sqrt(variance);
+                        break;
+                    default:
+                        result = "Invalid operation.";
+                }
+
+                const operationName = operation.charAt(0).toUpperCase() + operation.slice(1);
+                resultDiv.innerHTML = `<strong>${operationName}:</strong> ${typeof result === 'number' ? result.toFixed(6) : result}`;
+                resultDiv.classList.remove("hidden");
+
+                formulaStack.innerHTML = "";
+
+                const descCard = document.createElement("div");
+                descCard.className = "formula-card delay-1";
+                descCard.innerHTML = `<h5>📖 Description</h5><p>${descriptions[operation]}</p>`;
+
+                const formulaCard = document.createElement("div");
+                formulaCard.className = "formula-card delay-2";
+                formulaCard.innerHTML = `<h5>🧮 Formula</h5><p>${formulas[operation]}</p>`;
+
+                const stepCard = document.createElement("div");
+                stepCard.className = "formula-card delay-3";
+                stepCard.innerHTML = `<h5>👣 Step-by-Step</h5><p>${steps[operation](numbers)}</p>`;
+
+                formulaStack.appendChild(descCard);
+                formulaStack.appendChild(formulaCard);
+                formulaStack.appendChild(stepCard);
+            });
+        });
+    </script>
+</body>
+</html>

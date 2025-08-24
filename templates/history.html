@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>History</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+           background: linear-gradient(135deg, #090808 0%, #825ba9 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            padding: 40px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            margin-top: 20px;
+            margin-bottom: 40px;
+            color: #ffffff;
+            font-size: clamp(28px, 4vw, 36px);
+            font-weight: 700;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            letter-spacing: -0.5px;
+        }
+
+        .table-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 30px;
+            margin: 30px auto;
+            max-width: 95%;
+            box-shadow: 
+                0 20px 40px rgba(0, 0, 0, 0.1),
+                0 8px 16px rgba(0, 0, 0, 0.08),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: transparent;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        th {
+            padding: 16px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            border: none;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        th:first-child {
+            border-top-left-radius: 12px;
+        }
+
+        th:last-child {
+            border-top-right-radius: 12px;
+        }
+
+        td {
+            padding: 16px 20px;
+            text-align: center;
+            color: #2d3748;
+            font-weight: 500;
+            font-size: 15px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.1);
+            transition: background-color 0.3s ease;
+        }
+
+        tr:nth-child(even) td {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        tr:hover td {
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tr:last-child td:first-child {
+            border-bottom-left-radius: 12px;
+        }
+
+        tr:last-child td:last-child {
+            border-bottom-right-radius: 12px;
+        }
+
+        td a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        td a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.4);
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+        }
+
+        .no-history {
+            text-align: center;
+            margin-top: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .no-history p {
+            color: #ffffff;
+            font-size: 18px;
+            font-weight: 500;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .back-button-container {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .back-button {
+            display: inline-block;
+            padding: 14px 28px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: 0.5px;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-button:hover::before {
+            left: 100%;
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px 10px;
+            }
+
+            h2 {
+                font-size: 24px;
+                margin-bottom: 30px;
+            }
+
+            .table-container {
+                padding: 20px 15px;
+                margin: 20px auto;
+            }
+
+            th, td {
+                padding: 12px 8px;
+                font-size: 14px;
+            }
+
+            td a {
+                padding: 6px 12px;
+                font-size: 13px;
+            }
+
+            .back-button {
+                padding: 12px 24px;
+                font-size: 15px;
+            }
+
+            .no-history {
+                padding: 30px 20px;
+                margin-top: 40px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            th, td {
+                padding: 10px 6px;
+                font-size: 13px;
+            }
+
+            .table-container {
+                padding: 15px 10px;
+            }
+        }
+
+        /* Animation for table rows */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .table-container,
+        .no-history {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        tr {
+            animation: fadeInUp 0.6s ease forwards;
+        }
+
+        tr:nth-child(1) { animation-delay: 0.1s; }
+        tr:nth-child(2) { animation-delay: 0.15s; }
+        tr:nth-child(3) { animation-delay: 0.2s; }
+        tr:nth-child(4) { animation-delay: 0.25s; }
+        tr:nth-child(5) { animation-delay: 0.3s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>📊 History for {{ name }}</h2>
+
+        {% if history %}
+            <div class="table-container">
+                <table>
+                    <tr>
+                        <th>📄 File</th>
+                        <th>🔬 Analysis Type</th>
+                        <th>⏰ Timestamp</th>
+                        <th>📥 Report</th>
+                    </tr>
+                    {% for entry in history %}
+                        <tr>
+                            <td>{{ entry.filename }}</td>
+                            <td>{{ entry.analysis_type }}</td>
+                            <td>{{ entry.timestamp }}</td>
+                           <td>
+                                {% if entry.report_path %}
+                                   <a href="{{ url_for('static', filename='reports/' + entry.report_path) }}" download>Download</a>
+                                {% else %}
+                                    <span style="color: #718096; font-style: italic;">Not Available</span>
+                                {% endif %}
+                          </td>
+
+                    {% endfor %}
+                </table>
+            </div>
+        {% else %}
+            <div class="no-history">
+                <p>📭 No history found.</p>
+            </div>
+        {% endif %}
+
+        <div class="back-button-container">
+            <a href="{{ url_for('analyzer.dashboard') }}" class="back-button">
+                🏠 Back to Dashboard
+            </a>
+        </div>
+    </div>
+</body>
+</html>

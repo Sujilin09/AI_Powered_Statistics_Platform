@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <title>Analyzer Dashboard</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #090808 0%, #825ba9 100%);
+      min-height: 100vh;
+      color: #ffffff;
+      position: relative;
+      overflow-x: hidden;
+      padding: 30px;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    h2, h3 {
+      color: white;
+      margin-top: 30px;
+      text-align: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 600;
+      text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      position: relative;
+      z-index: 1;
+    }
+
+    h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      letter-spacing: -0.5px;
+    }
+
+    h3 {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    .centre_form {
+      margin: 40px auto;
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .left_form {
+      max-width: 500px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 40px;
+      border-radius: 24px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        0 8px 16px rgba(0, 0, 0, 0.08),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 1;
+      margin-top: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 12px;
+      font-weight: 600;
+      color: #2d3748;
+      font-size: 16px;
+      letter-spacing: 0.5px;
+    }
+
+    input[type="file"],
+    select {
+      padding: 14px 16px;
+      width: 100%;
+      max-width: 400px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      border: 2px solid rgba(102, 126, 234, 0.2);
+      background: rgba(255, 255, 255, 0.9);
+      font-size: 14px;
+      color: #2d3748;
+      transition: all 0.3s ease;
+      font-family: 'Inter', sans-serif;
+    }
+
+    input[type="file"]:focus,
+    select:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    input[type="hidden"] {
+      display: none;
+    }
+
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 14px 28px;
+      font-size: 16px;
+      font-weight: 600;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 
+        0 8px 16px rgba(102, 126, 234, 0.3),
+        0 4px 8px rgba(0, 0, 0, 0.1);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.5px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.6s;
+    }
+
+    button:hover {
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 
+        0 12px 24px rgba(102, 126, 234, 0.4),
+        0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    button:hover::before {
+      left: 100%;
+    }
+
+    button:active {
+      transform: translateY(0) scale(1);
+    }
+
+    .scroll-box {
+      max-height: 600px;
+      overflow-y: auto;
+      padding: 30px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.1),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      margin-top: 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .scroll-box::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .scroll-box::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+    }
+
+    .scroll-box::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      border-radius: 10px;
+    }
+
+    .scroll-box::-webkit-scrollbar-thumb:hover {
+      background: linear-gradient(135deg, #5a67d8, #6b46c1);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      position: relative;
+      z-index: 1;
+      margin-top: 20px;
+    }
+
+    ul li {
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 8px;
+      color: #2d3748;
+      font-weight: 500;
+      position: relative;
+      padding-left: 30px;
+    }
+
+    ul li::before {
+      content: '●';
+      color: #667eea;
+      position: absolute;
+      left: 12px;
+      font-size: 12px;
+    }
+
+    .download-container {
+      margin-top: 30px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .download-btn {
+      padding: 14px 24px;
+      background: linear-gradient(135deg, #48bb78, #38a169);
+      color: white;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      display: inline-block;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 16px rgba(72, 187, 120, 0.3);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    .download-btn:hover {
+      background: linear-gradient(135deg, #38a169, #2f855a);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px rgba(72, 187, 120, 0.4);
+    }
+
+    a {
+      color: #ffffff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      display: inline-block;
+      margin: 0 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    a:hover {
+      background: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .table-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .table-container table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255, 255, 255, 0.9);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .table-container th,
+    .table-container td {
+      padding: 12px 16px;
+      border: 1px solid rgba(102, 126, 234, 0.1);
+      color: #2d3748;
+    }
+
+    .table-container th {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      font-weight: 600;
+      text-align: left;
+    }
+
+    .table-container tr:nth-child(even) {
+      background: rgba(102, 126, 234, 0.05);
+    }
+
+    img {
+      max-width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      margin: 15px 0;
+    }
+
+    #results-container {
+      position: relative;
+      z-index: 1;
+    }
+
+    #dynamic-fields {
+      width: 100%;
+    }
+
+    p {
+      color: #2d3748;
+      line-height: 1.6;
+      font-size: 16px;
+      margin: 15px 0;
+    }
+
+    .scroll-box h3 {
+      color: #2d3748;
+      text-align: left;
+      margin-top: 25px;
+      margin-bottom: 15px;
+      font-size: 20px;
+      border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+      padding-bottom: 8px;
+    }
+
+    .scroll-box h3:first-child {
+      margin-top: 0;
+    }
+
+    /* Navigation links styling */
+    .nav-links {
+      text-align: center;
+      margin-top: 40px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        padding: 20px;
+      }
+      
+      .centre_form,
+      .left_form {
+        max-width: 100%;
+        padding: 30px 20px;
+      }
+      
+      input[type="file"],
+      select {
+        max-width: 100%;
+      }
+      
+      h2 {
+        font-size: 28px;
+      }
+      
+      .scroll-box {
+        padding: 20px;
+      }
+      
+      a {
+        display: block;
+        margin: 10px 0;
+      }
+    }
+
+    /* Animation for form elements */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .centre_form,
+    .left_form,
+    ul,
+    .scroll-box {
+      animation: fadeInUp 0.6s ease forwards;
+    }
+  </style>
+</head>
+<body>
+
+<script id="column-data" type="application/json">{{ columns|tojson }}</script>
+
+<h2>📊 Analyzer Dashboard</h2>
+
+<form class="centre_form" method="POST" action="{{ url_for('analyzer.dashboard') }}" enctype="multipart/form-data">
+  <label>Upload Dataset (CSV or Excel):</label>
+  <input type="file" name="dataset" accept=".csv, .xlsx" required>
+  <button type="submit">Upload</button>
+</form>
+
+{% if columns %}
+  <h3>Extracted Columns</h3>
+  <ul>
+    {% for col in columns %}
+      <li>{{ col }}</li>
+    {% endfor %}
+  </ul>
+
+  <form class="left_form" method="POST" action="{{ url_for('analyzer.analyze') }}">
+    <label>Select Analysis Task:</label>
+    <select id="task" name="task" required>
+      <option value="">--Select--</option>
+      <option value="simple_regression">Simple Linear Regression</option>
+      <option value="multiple_regression">Multiple Linear Regression</option>
+      <option value="one_sample_ttest">One Sample t-test</option>
+    </select>
+
+    <div id="dynamic-fields"></div>
+    <input type="hidden" name="columns" value="{{ columns | join(',') }}">
+    <button type="submit">Analyze</button>
+  </form>
+{% endif %}
+
+{% if summary_table or objective or interpretation or plots or docx_link %}
+  <div id="results-container">
+{% else %}
+  <div id="results-container" style="display: none;">
+{% endif %}
+
+    <div class="scroll-box">
+      {% if objective %}
+        <h3>Objective</h3>
+        <p>{{ objective }}</p>
+      {% endif %}
+
+      {% if dataset_description %}
+        <h3>Dataset Description</h3>
+          <div class="table-container" style="color: black;">
+          {{ dataset_description | safe }}
+        </div>
+      {% endif %}
+
+      {% if preprocessing_steps %}
+        <h3>Preprocessing Steps</h3>
+        <p>{{ preprocessing_steps }}</p>
+      {% endif %}
+
+      {% if summary_table %}
+        <h3>Summary</h3>
+        {{ summary_table | safe }}
+      {% endif %}
+
+      {% if interpretation %}
+        <h3>Interpretation</h3>
+        <p>{{ interpretation }}</p>
+      {% endif %}
+
+      {% if plots %}
+        <h3>Visualizations</h3>
+        {% for plot in plots %}
+          <img src="{{ url_for('static', filename='plots/' ~ plot) }}" alt="Plot">
+        {% endfor %}
+      {% endif %}
+    </div>
+
+    {% if docx_link %}
+    <div class="download-container">
+      <a href="{{ url_for('static', filename='reports/' ~ docx_link.split('/')[-1]) }}" download class="download-btn">
+        📄 Download Report
+      </a>
+    </div>
+    {% endif %}
+  </div>
+
+<div class="nav-links">
+  <a href="{{ url_for('analyzer.history') }}">📜 View History</a>
+  <a href="{{ url_for('index') }}">Dashboard</a>
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

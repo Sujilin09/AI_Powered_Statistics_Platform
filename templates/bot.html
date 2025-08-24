@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>StatBot</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <!-- MathJax for LaTeX rendering -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(', '\\)']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+<body>
+  <div class="container">
+    <aside class="sidebar">
+      <h2>StatBot</h2>
+      <ul id="historyList"></ul>
+    </aside>
+
+    <main class="chat-section">
+      <div id="chatWindow" class="chat-window"></div>
+
+      <form id="chatForm">
+        <input type="text" id="userInput" placeholder="Ask a statistics question..." autocomplete="off">
+        <button type="submit">Send</button>
+      </form>
+    </main>
+  </div>
+
+  <script>
+    const form = document.getElementById("chatForm");
+    const input = document.getElementById("userInput");
+    const chatWindow = document.getElementById("chatWindow");
+    const historyList = document.getElementById("historyList");
+
+    const history = JSON.parse(localStorage.getItem("statbotHistory")) || [];
+
+    function addToHistory(prompt) {
+      if (!history.includes(prompt)) {
+        history.unshift(prompt);
+        localStorage.setItem("statbotHistory", JSON.stringify(history));
+        renderHistory();
+      }
+    }
+
+    function renderHistory() {
+      historyList.innerHTML = "";
+      history.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = item;
+        li.onclick = () => {
+          input.value = item;
+        };
+        historyList.appendChild(li);
+      });
+    }
+
+    function appendMessage(sender, text) {
+      const div = document.createElement("div");
+      div.className = sender === "user" ? "user-msg" : "bot-msg";
+      div.innerHTML = text;
+      chatWindow.appendChild(div);
+      MathJax.typesetPromise(); // Re-render LaTeX after message
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    }
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const question = input.value.trim();
+      if (!question) return;
+
+      appendMessage("user", question);
+      addToHistory(question);
+      input.value = "";
+
+      const res = await fetch("/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: question })
+      });
+
+      const data = await res.json();
+      appendMessage("bot", data.reply);
+    };
+
+    renderHistory();
+  </script>
+</body>
+</html>

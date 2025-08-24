@@ -1,0 +1,171 @@
+/* Reset and global styles */
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #fc466b, #3f5efb);
+
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: white;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Login container */
+/* .login-form {
+    background-color: #2f3136;
+    padding: 40px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+} */
+
+.login-form h1 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    text-align: center;
+    font-weight: 600;
+}
+
+.login-form h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    font-weight: normal;
+    text-align: center;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+input[type="text"],
+input[type="password"] {
+    background-color: #202225;
+    color: white;
+    border: 1px solid #72767d;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 15px;
+    outline: none;
+    transition: border 0.2s ease-in-out;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus {
+    border-color: #5865f2;
+}
+
+.btn {
+    background-color: #5865f2;
+    border: none;
+    border-radius: 5px;
+    padding: 12px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.btn:hover {
+    background-color: #4752c4;
+}
+
+.account {
+    font-size: 14px;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.account a {
+    color: #00b0f4;
+    text-decoration: none;
+}
+
+.account a:hover {
+    text-decoration: underline;
+}
+.upload-form {
+    background-color: #2f3136;
+    padding: 40px;
+    border-radius: 10px;
+    width: 400px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    text-align: center;
+}
+
+.upload-form h2 {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.upload-form input[type="file"] {
+    background-color: #202225;
+    color: white;
+    border: 1px solid #72767d;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.upload-form button {
+    background-color: #5865f2;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 5px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.upload-form button:hover {
+    background-color: #4752c4;
+}
+.login-form {
+    background-color: rgba(255, 255, 255, 0.1); /* Glass-like effect */
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    text-align: center;
+    width: 350px;
+}
+
+.login-form button {
+    background-color: #3f5efb;
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.login-form button:hover {
+    background-color: #2d45c6; /* Darker blue on hover */
+}
+.login-form a {
+    color: #0800f7;
+    text-decoration: none;
+    font-weight: 500;
+    margin: 10px;
+    display: inline-block;
+    transition: color 0.3s ease;
+    text-decoration: underline;
+}
+
+.login-form a:hover {
+    color: #ff0404; /* pink on hover */
+    text-decoration: underline;
+}

@@ -1,92 +1,3243 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>StatBot</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <!-- MathJax for LaTeX rendering -->
-  <script>
-    window.MathJax = {
-      tex: { inlineMath: [['\\(', '\\)']] },
-      svg: { fontCache: 'global' }
-    };
-  </script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Bot Assistant</title>
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            color: white;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #34495e;
+            padding-left: 30px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-right: 4px solid #fff;
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            padding: 20px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .upload-section h3 {
+            margin-bottom: 15px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .file-input-wrapper {
+            margin-bottom: 15px;
+        }
+
+        .file-input input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            background: #34495e;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 10px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #219a52;
+        }
+
+        .upload-btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        /* Documents List */
+        .documents-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .document-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .document-item:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+
+        .document-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-right: 4px solid #fff;
+        }
+
+        .document-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+
+        .document-meta {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+
+        .main-header {
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .main-header h2 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .main-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+            display: flex; /* Ensure inner content is also a flex container */
+            flex-direction: column;
+        }
+
+        /* Chat Interface */
+        .chat-interface {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin: 15px 0;
+            max-width: 80%;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .user-message .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 20px 20px 5px 20px;
+            display: inline-block;
+        }
+
+        .bot-message {
+            margin-right: auto;
+        }
+
+        .bot-message .message-content {
+            background: white;
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 20px 20px 20px 5px;
+            border: 1px solid #e2e8f0;
+            display: inline-block;
+        }
+
+        .source-info {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #user-input:focus {
+            border-color: #667eea;
+        }
+
+        #send-btn {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        #send-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        #send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Document Viewer */
+        .document-viewer {
+            height: 100%;
+            display: none;
+            flex-direction: column;
+        }
+
+        .document-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: white;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .document-content h1, .document-content h2, .document-content h3 {
+            color: #2c3e50;
+            margin: 20px 0 15px 0;
+        }
+
+        .document-content p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+
+        /* Mathematical formula styling */
+        .formula-container {
+            background: #f8f9ff;
+            border: 1px solid #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .document-frame {
+            width: 100%;
+            height: calc(100% - 150px); /* Adjust height to accommodate header and buttons */
+            border: none;
+        }
+
+        .math-content {
+            font-family: 'Times New Roman', serif;
+            line-height: 2;
+            font-size: 1.1rem;
+        }
+
+        .chapter-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .formula-section {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .view-toggle-btn {
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f1f1f1;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .view-toggle-btn:hover {
+            background: #e9e9e9;
+        }
+
+        /* Improve readability for statistical formulas */
+        .mjx-chtml {
+            font-size: 1.1em !important;
+        }
+
+        /* Upload View */
+        .upload-view {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            flex-direction: column;
+            background: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .upload-drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 40px;
+            background: #f8f9ff;
+            transition: all 0.3s;
+            cursor: pointer;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .upload-drop-zone:hover {
+            border-color: #5a67d8;
+            background: #f0f4ff;
+        }
+
+        .upload-drop-zone.dragover {
+            border-color: #4c51bf;
+            background: #e6fffa;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px 20px;
+            margin: 10px 0;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.5s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .status-message {
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 40vh;
+            }
+            
+            .documents-list {
+                max-height: 200px;
+            }
+
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <aside class="sidebar">
-      <h2>StatBot</h2>
-      <ul id="historyList"></ul>
-    </aside>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>📊 StatBot</h1>
+                <p>Statistical Assistant</p>   
+                <p>Welcome, {{ user_name or 'Guest' }}</p>
+            </div>
 
-    <main class="chat-section">
-      <div id="chatWindow" class="chat-window"></div>
+            <div class="sidebar-nav">
+                <button class="nav-item active" onclick="showView('chat')">
+                    <span class="nav-icon">💬</span>
+                    Chat Bot
+                </button>
+                <button class="nav-item" onclick="showView('upload')">
+                    <span class="nav-icon">📤</span>
+                    Upload Files
+                </button>
+            </div>
 
-      <form id="chatForm">
-        <input type="text" id="userInput" placeholder="Ask a statistics question..." autocomplete="off">
-        <button type="submit">Send</button>
-      </form>
-    </main>
-  </div>
+            <div class="upload-section">
+                <h3>Quick Upload</h3>
+                <div class="file-input-wrapper">
+                    <input type="file" id="file-upload" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg">
+                </div>
+                <button id="upload-btn" class="upload-btn">Upload File</button>
+                <div id="upload-status"></div>
+            </div>
 
-  <script>
-    const form = document.getElementById("chatForm");
-    const input = document.getElementById("userInput");
-    const chatWindow = document.getElementById("chatWindow");
-    const historyList = document.getElementById("historyList");
+            <div class="documents-list" id="documents-list">
+                <div style="padding: 20px; text-align: center; opacity: 0.7; font-size: 0.9rem;">
+                    No documents uploaded yet
+                </div>
+            </div>
+        </div>
 
-    const history = JSON.parse(localStorage.getItem("statbotHistory")) || [];
+        <div class="main-content">
+            <div class="main-header">
+                <h2 id="main-title">Chat with Statistical Bot</h2>
+            </div>
 
-    function addToHistory(prompt) {
-      if (!history.includes(prompt)) {
-        history.unshift(prompt);
-        localStorage.setItem("statbotHistory", JSON.stringify(history));
-        renderHistory();
-      }
-    }
+            <div class="main-body">
+                <div id="chat-view" class="chat-interface">
+                    <div id="chat-box">
+                        <div class="bot-message">
+                            <div class="message-content">
+                                Hello! I'm your Statistical Bot Assistant. Upload documents to build a knowledge base, then ask me any statistics-related questions!
+                            </div>
+                        </div>
+                    </div>
 
-    function renderHistory() {
-      historyList.innerHTML = "";
-      history.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = item;
-        li.onclick = () => {
-          input.value = item;
+                    <div class="typing-indicator" id="typing-indicator">
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span style="margin-left: 10px; color: #666;">Bot is typing...</span>
+                    </div>
+
+                    <div class="input-area">
+                        <input type="text" id="user-input" placeholder="Ask your statistics question...">
+                        <button id="send-btn">Send</button>
+                    </div>
+                </div>
+
+                <div id="upload-view" class="upload-view">
+                    <div class="upload-drop-zone" id="drop-zone">
+                        <div class="upload-icon">📁</div>
+                        <h3>Drop files here or click to browse</h3>
+                        <p>Supported formats: PDF, DOCX, TXT, Images</p>
+                        <input type="file" id="main-file-upload" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" style="display: none;" multiple>
+                    </div>
+                    <div id="main-upload-status" style="margin-top: 20px;"></div>
+                </div>
+
+                <div id="document-view" class="document-viewer">
+                    <div class="document-content" id="document-content">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'chat';
+        let sessionId = generateSessionId();
+        let documentsData = [];
+        let currentDocumentView = 'summary'; // New global variable
+
+        function generateSessionId() {
+            return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDocumentsList();
+            setupDragAndDrop();
+            document.getElementById('user-input').focus();
+        });
+
+        function showView(view) {
+            document.getElementById('chat-view').style.display = 'none';
+            document.getElementById('upload-view').style.display = 'none';
+            document.getElementById('document-view').style.display = 'none';
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.document-item').forEach(item => item.classList.remove('active'));
+
+            currentView = view;
+            
+            if (view === 'chat') {
+                document.getElementById('chat-view').style.display = 'flex';
+                document.getElementById('main-title').textContent = 'Chat with Statistical Bot';
+                document.querySelector('[onclick="showView(\'chat\')"]').classList.add('active');
+                setTimeout(() => document.getElementById('user-input').focus(), 100);
+            } else if (view === 'upload') {
+                document.getElementById('upload-view').style.display = 'flex';
+                document.getElementById('main-title').textContent = 'Upload Documents';
+                document.querySelector('[onclick="showView(\'upload\')"]').classList.add('active');
+            }
+        }
+
+        function showDocument(docIndex) {
+            const doc = documentsData[docIndex];
+            if (!doc) return;
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.document-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-doc-id="${docIndex}"]`).classList.add('active');
+
+            document.getElementById('chat-view').style.display = 'none';
+            document.getElementById('upload-view').style.display = 'none';
+            document.getElementById('document-view').style.display = 'flex';
+
+            document.getElementById('main-title').textContent = doc.title;
+            currentView = 'document';
+            
+            // Default to summary view
+            loadDocumentContent(docIndex, 'summary');
+        }
+
+        function loadDocumentsList() {
+            fetch('/bot/knowledge-base')
+                .then(res => res.json())
+                .then(data => {
+                    documentsData = data.entries || [];
+                    updateDocumentsList();
+                })
+                .catch(err => {
+                    console.error('Error loading documents:', err);
+                });
+        }
+
+        function updateDocumentsList() {
+            const container = document.getElementById('documents-list');
+            
+            if (documentsData.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 20px; text-align: center; opacity: 0.7; font-size: 0.9rem;">
+                        No documents uploaded yet
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = documentsData.map((doc, index) => `
+                <div class="document-item" data-doc-id="${index}" onclick="showDocument(${index})">
+                    <div class="document-title">${doc.title}</div>
+                    <div class="document-meta">${doc.content_type.toUpperCase()} • ${doc.chunks_count} chunks</div>
+                </div>
+            `).join('');
+        }
+
+        function loadDocumentContent(docIndex, viewType) {
+            const doc = documentsData[docIndex];
+            if (!doc) return;
+            
+            currentDocumentView = viewType;
+            
+            document.getElementById('document-content').innerHTML = `
+                <h1>${doc.title}</h1>
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <div class="typing-dots" style="justify-content: center; margin-bottom: 10px;">
+                        <span></span><span></span><span></span>
+                    </div>
+                    Loading ${viewType} content...
+                </div>
+            `;
+
+            fetch('/bot/document-content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: doc.title, view_type: viewType })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('document-content').innerHTML = `<h1>${doc.title}</h1><div class="status-message status-error">❌ Error: ${data.error}</div>`;
+                } else {
+                    displayDocumentContent(doc, data);
+                }
+            })
+            .catch(err => {
+                console.error('Error loading document content:', err);
+                document.getElementById('document-content').innerHTML = `<h1>${doc.title}</h1><div class="status-message status-error">🔌 Connection Error</div>`;
+            });
+        }
+        
+        function displayDocumentContent(doc, data) {
+            const contentContainer = document.getElementById('document-content');
+            
+            // Check if the content is a full document to decide how to render it
+            if (data.view_type === 'full') {
+                contentContainer.innerHTML = `
+                    <h1>${doc.title}</h1>
+                    <div style="margin: 20px 0; padding: 15px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+                        <strong>📄 Type:</strong> ${doc.content_type.toUpperCase()} &nbsp;&nbsp;
+                        <strong>📅 Uploaded:</strong> ${doc.created_at} &nbsp;&nbsp;
+                        <strong>📏 Length:</strong> ${data.total_length.toLocaleString()} characters
+                    </div>
+                    <div style="text-align: right; margin-bottom: 10px;">
+                        <button class="view-toggle-btn" onclick="loadDocumentContent(${documentsData.findIndex(d => d.title === doc.title)}, 'summary')">
+                            View Summary
+                        </button>
+                    </div>
+                    <embed src="/original-document/${doc.title}" class="document-frame">
+                `;
+            } else { // This is the summary view
+                const processedContent = processStatisticalContent(data.content);
+                contentContainer.innerHTML = `
+                    <h1>${doc.title}</h1>
+                    <div style="margin: 20px 0; padding: 15px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+                        <strong>📄 Type:</strong> ${doc.content_type.toUpperCase()} &nbsp;&nbsp;
+                        <strong>📊 Chunks:</strong> ${data.total_chunks} &nbsp;&nbsp;
+                        <strong>📅 Uploaded:</strong> ${doc.created_at} &nbsp;&nbsp;
+                        <strong>📏 Length:</strong> ${data.total_length.toLocaleString()} characters
+                        ${data.has_math ? ' &nbsp;&nbsp;<strong>🧮 Contains Math:</strong> Yes' : ''}
+                    </div>
+                    <div style="text-align: right; margin-bottom: 10px;">
+                        <button class="view-toggle-btn" onclick="loadDocumentContent(${documentsData.findIndex(d => d.title === doc.title)}, 'full')">
+                            View Full Document
+                        </button>
+                    </div>
+                    <div class="formula-section">
+                        <div class="math-content tex2jax_process">
+                            ${processedContent}
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
+                        <h4 style="color: #155724; margin-bottom: 10px;">💡 How to use this document:</h4>
+                        <p style="margin: 0; color: #155724;">You can ask specific questions about these formulas and concepts in the chat interface. The bot will search through all ${data.total_chunks} chunks to provide relevant answers.</p>
+                    </div>
+                `;
+                
+                if (data.has_math) {
+                    MathJax.typesetPromise([contentContainer]);
+                }
+            }
+        }
+
+        function toggleDocumentView(docIndex) {
+            const newViewType = currentDocumentView === 'summary' ? 'full' : 'summary';
+            loadDocumentContent(docIndex, newViewType);
+        }
+
+        function processStatisticalContent(content) {
+            let lines = content.split('\n');
+            let processedLines = [];
+            for (let line of lines) {
+                line = line.trim();
+                if (!line) { processedLines.push('<br>'); continue; }
+                if (line.includes('Chapter') && (line.includes('Formulas') || line.includes('Page'))) {
+                    processedLines.push(`<div class="chapter-title">${line}</div>`);
+                    continue;
+                }
+                if (containsFormula(line)) {
+                    const formattedLine = formatMathematicalFormula(line);
+                    processedLines.push(`<div class="formula-container">${formattedLine}</div>`);
+                } else {
+                    processedLines.push(`<p>${escapeHtml(line)}</p>`);
+                }
+            }
+            return processedLines.join('\n');
+        }
+
+        function containsFormula(line) {
+            const formulaIndicators = ['=', '±', '≠', '≤', '≥', '∑', '√', 'σ', 'μ', '̅', 'α', 'β', 'χ²', 'H0:', 'H1:', 'df =', '∙', '²', '⁄', 'TI-Calculator', 'Excel:'];
+            return formulaIndicators.some(indicator => line.includes(indicator));
+        }
+
+        function formatMathematicalFormula(line) {
+            let formatted = line;
+            const replacements = {'±': '\\pm', '≠': '\\neq', '≤': '\\leq', '≥': '\\geq', '∙': '\\cdot', 'σ²': '\\sigma^2', 'χ²': '\\chi^2', 'α': '\\alpha', 'β': '\\beta', 'μ': '\\mu', 'H0:': 'H_0:', 'H1:': 'H_1:', 'μ0': '\\mu_0', 'μ1': '\\mu_1', 'μ2': '\\mu_2', 'p0': 'p_0', 'p1': 'p_1', 'p2': 'p_2', '̅': '\\bar{x}', '∑': '\\sum', '√': '\\sqrt'};
+            for (let [old, latex] of Object.entries(replacements)) { formatted = formatted.replaceAll(old, latex); }
+            if (formatted.includes('=') || formatted.includes('\\')) {
+                if (formatted.includes(':') && !formatted.includes('H_')) {
+                    const parts = formatted.split(':');
+                    if (parts.length === 2) { return `<strong>${escapeHtml(parts[0])}:</strong> $${parts[1].trim()}$`; }
+                }
+                return `$${formatted}$`;
+            }
+            return escapeHtml(formatted);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // File Upload Functions
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            const mainFileUpload = document.getElementById('main-file-upload');
+            dropZone.addEventListener('click', () => mainFileUpload.click());
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+            dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); const files = Array.from(e.dataTransfer.files); uploadFiles(files); });
+            mainFileUpload.addEventListener('change', (e) => { const files = Array.from(e.target.files); uploadFiles(files); });
+        }
+
+        function uploadFiles(files) {
+            if (!files || files.length === 0) return;
+            const statusContainer = document.getElementById('main-upload-status');
+            statusContainer.innerHTML = '';
+            files.forEach((file, index) => { uploadSingleFile(file, statusContainer, index); });
+        }
+
+        function uploadSingleFile(file, statusContainer, index) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('title', file.name);
+            const statusDiv = document.createElement('div');
+            statusDiv.innerHTML = `<div class="status-message" style="background: #e3f2fd; color: #1976d2; border: 1px solid #bbdefb;">📤 Uploading ${file.name}...</div>`;
+            statusContainer.appendChild(statusDiv);
+            fetch('/bot/upload', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    statusDiv.innerHTML = `<div class="status-message status-error">❌ ${file.name}: ${data.error}</div>`;
+                } else {
+                    statusDiv.innerHTML = `<div class="status-message status-success">✅ ${file.name} uploaded successfully! (${data.chunks_count} chunks)</div>`;
+                    loadDocumentsList();
+                }
+            })
+            .catch(err => {
+                statusDiv.innerHTML = `<div class="status-message status-error">❌ ${file.name}: Upload failed</div>`;
+            });
+        }
+
+        // Sidebar Upload
+        document.getElementById('upload-btn').addEventListener('click', () => {
+            const file = document.getElementById('file-upload').files[0];
+            if (!file) { showSidebarStatus('Please select a file first.', 'error'); return; }
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('title', file.name);
+            const btn = document.getElementById('upload-btn');
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+            fetch('/bot/upload', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) { showSidebarStatus(`Upload failed: ${data.error}`, 'error'); } else { showSidebarStatus(`✅ ${data.message}`, 'success'); document.getElementById('file-upload').value = ''; loadDocumentsList(); }
+            })
+            .catch(err => { showSidebarStatus(`Upload error: ${err.message}`, 'error'); })
+            .finally(() => { btn.disabled = false; btn.textContent = 'Upload File'; });
+        });
+
+        function showSidebarStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('upload-status');
+            statusDiv.innerHTML = `<div class="status-message status-${type}" style="font-size: 0.8rem; margin: 5px 0;">${message}</div>`;
+            setTimeout(() => { statusDiv.innerHTML = ''; }, 5000);
+        }
+
+        // Chat Functions
+        function appendMessage(content, sender, sourceInfo = null) {
+            const chatBox = document.getElementById('chat-box');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender + '-message');
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('message-content');
+            if (sender === 'bot') {
+                contentDiv.innerHTML = `<div class="math-content tex2jax_process">${content}</div>`;
+                if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                    MathJax.typesetPromise([contentDiv])
+                        .then(() => { chatBox.scrollTop = chatBox.scrollHeight; })
+                        .catch((err) => { console.error('MathJax rendering error for chat message:', err); contentDiv.textContent = content; chatBox.scrollTop = chatBox.scrollHeight; });
+                } else {
+                    contentDiv.textContent = content;
+                }
+            } else {
+                contentDiv.textContent = content;
+            }
+            messageDiv.appendChild(contentDiv);
+            if (sourceInfo && sender === 'bot') {
+                const sourceDiv = document.createElement('div');
+                sourceDiv.classList.add('source-info');
+                sourceDiv.textContent = sourceInfo;
+                messageDiv.appendChild(sourceDiv);
+            }
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typing-indicator').style.display = 'block';
+            document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+        }
+
+        function hideTyping() {
+            document.getElementById('typing-indicator').style.display = 'none';
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const text = input.value.trim();
+            if (!text) return;
+            sendBtn.disabled = true;
+            input.disabled = true;
+            appendMessage(text, 'user');
+            input.value = '';
+            showTyping();
+            fetch('/bot/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, session_id: sessionId }) })
+            .then(res => res.json())
+            .then(data => {
+                hideTyping();
+                if (data.error) { appendMessage(`⚠️ Error: ${data.error}`, 'bot'); } else { appendMessage(data.reply, 'bot', data.source_info); }
+            })
+            .catch(err => {
+                hideTyping();
+                appendMessage('⚠️ Error connecting to server.', 'bot');
+                console.error('Chat error:', err);
+            })
+            .finally(() => {
+                sendBtn.disabled = false;
+                input.disabled = false;
+                input.focus();
+            });
+        }
+
+        document.getElementById('send-btn').addEventListener('click', sendMessage);
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Bot Assistant</title>
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
         };
-        historyList.appendChild(li);
-      });
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            color: white;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #34495e;
+            padding-left: 30px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-right: 4px solid #fff;
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            padding: 20px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .upload-section h3 {
+            margin-bottom: 15px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .file-input-wrapper {
+            margin-bottom: 15px;
+        }
+
+        .file-input input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            background: #34495e;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 10px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #219a52;
+        }
+
+        .upload-btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        /* Documents List */
+        .documents-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .document-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .document-item:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+
+        .document-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-right: 4px solid #fff;
+        }
+
+        .document-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+
+        .document-meta {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+
+        .main-header {
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .main-header h2 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .main-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+            display: flex; /* Ensure inner content is also a flex container */
+            flex-direction: column;
+        }
+
+        /* Chat Interface */
+        .chat-interface {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin: 15px 0;
+            max-width: 80%;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .user-message .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 20px 20px 5px 20px;
+            display: inline-block;
+        }
+
+        .bot-message {
+            margin-right: auto;
+        }
+
+        .bot-message .message-content {
+            background: white;
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 20px 20px 20px 5px;
+            border: 1px solid #e2e8f0;
+            display: inline-block;
+        }
+
+        .source-info {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #user-input:focus {
+            border-color: #667eea;
+        }
+
+        #send-btn {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        #send-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        #send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Document Viewer */
+        .document-viewer {
+            height: 100%;
+            display: none;
+            flex-direction: column;
+        }
+
+        .document-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: white;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .document-content h1, .document-content h2, .document-content h3 {
+            color: #2c3e50;
+            margin: 20px 0 15px 0;
+        }
+
+        .document-content p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+
+        /* Mathematical formula styling */
+        .formula-container {
+            background: #f8f9ff;
+            border: 1px solid #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .document-frame {
+            width: 100%;
+            height: calc(100% - 150px); /* Adjust height to accommodate header and buttons */
+            border: none;
+        }
+
+        .math-content {
+            font-family: 'Times New Roman', serif;
+            line-height: 2;
+            font-size: 1.1rem;
+        }
+
+        .chapter-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .formula-section {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .view-toggle-btn {
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f1f1f1;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .view-toggle-btn:hover {
+            background: #e9e9e9;
+        }
+
+        /* Improve readability for statistical formulas */
+        .mjx-chtml {
+            font-size: 1.1em !important;
+        }
+
+        /* Upload View */
+        .upload-view {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            flex-direction: column;
+            background: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .upload-drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 40px;
+            background: #f8f9ff;
+            transition: all 0.3s;
+            cursor: pointer;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .upload-drop-zone:hover {
+            border-color: #5a67d8;
+            background: #f0f4ff;
+        }
+
+        .upload-drop-zone.dragover {
+            border-color: #4c51bf;
+            background: #e6fffa;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px 20px;
+            margin: 10px 0;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.5s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .status-message {
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 40vh;
+            }
+            
+            .documents-list {
+                max-height: 200px;
+            }
+
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>📊 StatBot</h1>
+                <p>Statistical Assistant</p>
+            </div>
+
+            <div class="sidebar-nav">
+                <button class="nav-item active" onclick="showView('chat')">
+                    <span class="nav-icon">💬</span>
+                    Chat Bot
+                </button>
+                <button class="nav-item" onclick="showView('upload')">
+                    <span class="nav-icon">📤</span>
+                    Upload Files
+                </button>
+            </div>
+
+            <div class="upload-section">
+                <h3>Quick Upload</h3>
+                <div class="file-input-wrapper">
+                    <input type="file" id="file-upload" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg">
+                </div>
+                <button id="upload-btn" class="upload-btn">Upload File</button>
+                <div id="upload-status"></div>
+            </div>
+
+            <div class="documents-list" id="documents-list">
+                <div style="padding: 20px; text-align: center; opacity: 0.7; font-size: 0.9rem;">
+                    No documents uploaded yet
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="main-header">
+                <h2 id="main-title">Chat with Statistical Bot</h2>
+            </div>
+
+            <div class="main-body">
+                <div id="chat-view" class="chat-interface">
+                    <div id="chat-box">
+                        <div class="bot-message">
+                            <div class="message-content">
+                                Hello! I'm your Statistical Bot Assistant. Upload documents to build a knowledge base, then ask me any statistics-related questions!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="typing-indicator" id="typing-indicator">
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span style="margin-left: 10px; color: #666;">Bot is typing...</span>
+                    </div>
+
+                    <div class="input-area">
+                        <input type="text" id="user-input" placeholder="Ask your statistics question...">
+                        <button id="send-btn">Send</button>
+                    </div>
+                </div>
+
+                <div id="upload-view" class="upload-view">
+                    <div class="upload-drop-zone" id="drop-zone">
+                        <div class="upload-icon">📁</div>
+                        <h3>Drop files here or click to browse</h3>
+                        <p>Supported formats: PDF, DOCX, TXT, Images</p>
+                        <input type="file" id="main-file-upload" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" style="display: none;" multiple>
+                    </div>
+                    <div id="main-upload-status" style="margin-top: 20px;"></div>
+                </div>
+
+                <div id="document-view" class="document-viewer">
+                    <div class="document-content" id="document-content">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'chat';
+        let sessionId = generateSessionId();
+        let documentsData = [];
+        let currentDocumentView = 'summary'; // New global variable
+
+        function generateSessionId() {
+            return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDocumentsList();
+            setupDragAndDrop();
+            document.getElementById('user-input').focus();
+        });
+
+        function showView(view) {
+            document.getElementById('chat-view').style.display = 'none';
+            document.getElementById('upload-view').style.display = 'none';
+            document.getElementById('document-view').style.display = 'none';
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.document-item').forEach(item => item.classList.remove('active'));
+
+            currentView = view;
+            
+            if (view === 'chat') {
+                document.getElementById('chat-view').style.display = 'flex';
+                document.getElementById('main-title').textContent = 'Chat with Statistical Bot';
+                document.querySelector('[onclick="showView(\'chat\')"]').classList.add('active');
+                setTimeout(() => document.getElementById('user-input').focus(), 100);
+            } else if (view === 'upload') {
+                document.getElementById('upload-view').style.display = 'flex';
+                document.getElementById('main-title').textContent = 'Upload Documents';
+                document.querySelector('[onclick="showView(\'upload\')"]').classList.add('active');
+            }
+        }
+
+        function showDocument(docIndex) {
+            const doc = documentsData[docIndex];
+            if (!doc) return;
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.document-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-doc-id="${docIndex}"]`).classList.add('active');
+
+            document.getElementById('chat-view').style.display = 'none';
+            document.getElementById('upload-view').style.display = 'none';
+            document.getElementById('document-view').style.display = 'flex';
+
+            document.getElementById('main-title').textContent = doc.title;
+            currentView = 'document';
+            
+            // Default to summary view
+            loadDocumentContent(docIndex, 'summary');
+        }
+
+        function loadDocumentsList() {
+            fetch('/bot/knowledge-base')
+                .then(res => res.json())
+                .then(data => {
+                    documentsData = data.entries || [];
+                    updateDocumentsList();
+                })
+                .catch(err => {
+                    console.error('Error loading documents:', err);
+                });
+        }
+
+        function updateDocumentsList() {
+            const container = document.getElementById('documents-list');
+            
+            if (documentsData.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 20px; text-align: center; opacity: 0.7; font-size: 0.9rem;">
+                        No documents uploaded yet
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = documentsData.map((doc, index) => `
+                <div class="document-item" data-doc-id="${index}" onclick="showDocument(${index})">
+                    <div class="document-title">${doc.title}</div>
+                    <div class="document-meta">${doc.content_type.toUpperCase()} • ${doc.chunks_count} chunks</div>
+                </div>
+            `).join('');
+        }
+
+        function loadDocumentContent(docIndex, viewType) {
+            const doc = documentsData[docIndex];
+            if (!doc) return;
+            
+            currentDocumentView = viewType;
+            
+            document.getElementById('document-content').innerHTML = `
+                <h1>${doc.title}</h1>
+                <div style="text-align: center; padding: 40px; color: #666;">
+                    <div class="typing-dots" style="justify-content: center; margin-bottom: 10px;">
+                        <span></span><span></span><span></span>
+                    </div>
+                    Loading ${viewType} content...
+                </div>
+            `;
+
+            fetch('/bot/document-content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: doc.title, view_type: viewType })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('document-content').innerHTML = `<h1>${doc.title}</h1><div class="status-message status-error">❌ Error: ${data.error}</div>`;
+                } else {
+                    displayDocumentContent(doc, data);
+                }
+            })
+            .catch(err => {
+                console.error('Error loading document content:', err);
+                document.getElementById('document-content').innerHTML = `<h1>${doc.title}</h1><div class="status-message status-error">🔌 Connection Error</div>`;
+            });
+        }
+        
+        function displayDocumentContent(doc, data) {
+            const contentContainer = document.getElementById('document-content');
+            
+            // Check if the content is a full document to decide how to render it
+            if (data.view_type === 'full') {
+                contentContainer.innerHTML = `
+                    <h1>${doc.title}</h1>
+                    <div style="margin: 20px 0; padding: 15px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+                        <strong>📄 Type:</strong> ${doc.content_type.toUpperCase()} &nbsp;&nbsp;
+                        <strong>📅 Uploaded:</strong> ${doc.created_at} &nbsp;&nbsp;
+                        <strong>📏 Length:</strong> ${data.total_length.toLocaleString()} characters
+                    </div>
+                    <div style="text-align: right; margin-bottom: 10px;">
+                        <button class="view-toggle-btn" onclick="loadDocumentContent(${documentsData.findIndex(d => d.title === doc.title)}, 'summary')">
+                            View Summary
+                        </button>
+                    </div>
+                    <embed src="/original-document/${doc.title}" class="document-frame">
+                `;
+            } else { // This is the summary view
+                const processedContent = processStatisticalContent(data.content);
+                contentContainer.innerHTML = `
+                    <h1>${doc.title}</h1>
+                    <div style="margin: 20px 0; padding: 15px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+                        <strong>📄 Type:</strong> ${doc.content_type.toUpperCase()} &nbsp;&nbsp;
+                        <strong>📊 Chunks:</strong> ${data.total_chunks} &nbsp;&nbsp;
+                        <strong>📅 Uploaded:</strong> ${doc.created_at} &nbsp;&nbsp;
+                        <strong>📏 Length:</strong> ${data.total_length.toLocaleString()} characters
+                        ${data.has_math ? ' &nbsp;&nbsp;<strong>🧮 Contains Math:</strong> Yes' : ''}
+                    </div>
+                    <div style="text-align: right; margin-bottom: 10px;">
+                        <button class="view-toggle-btn" onclick="loadDocumentContent(${documentsData.findIndex(d => d.title === doc.title)}, 'full')">
+                            View Full Document
+                        </button>
+                    </div>
+                    <div class="formula-section">
+                        <div class="math-content tex2jax_process">
+                            ${processedContent}
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
+                        <h4 style="color: #155724; margin-bottom: 10px;">💡 How to use this document:</h4>
+                        <p style="margin: 0; color: #155724;">You can ask specific questions about these formulas and concepts in the chat interface. The bot will search through all ${data.total_chunks} chunks to provide relevant answers.</p>
+                    </div>
+                `;
+                
+                if (data.has_math) {
+                    MathJax.typesetPromise([contentContainer]);
+                }
+            }
+        }
+
+        function toggleDocumentView(docIndex) {
+            const newViewType = currentDocumentView === 'summary' ? 'full' : 'summary';
+            loadDocumentContent(docIndex, newViewType);
+        }
+
+        function processStatisticalContent(content) {
+            let lines = content.split('\n');
+            let processedLines = [];
+            for (let line of lines) {
+                line = line.trim();
+                if (!line) { processedLines.push('<br>'); continue; }
+                if (line.includes('Chapter') && (line.includes('Formulas') || line.includes('Page'))) {
+                    processedLines.push(`<div class="chapter-title">${line}</div>`);
+                    continue;
+                }
+                if (containsFormula(line)) {
+                    const formattedLine = formatMathematicalFormula(line);
+                    processedLines.push(`<div class="formula-container">${formattedLine}</div>`);
+                } else {
+                    processedLines.push(`<p>${escapeHtml(line)}</p>`);
+                }
+            }
+            return processedLines.join('\n');
+        }
+
+        function containsFormula(line) {
+            const formulaIndicators = ['=', '±', '≠', '≤', '≥', '∑', '√', 'σ', 'μ', '̅', 'α', 'β', 'χ²', 'H0:', 'H1:', 'df =', '∙', '²', '⁄', 'TI-Calculator', 'Excel:'];
+            return formulaIndicators.some(indicator => line.includes(indicator));
+        }
+
+        function formatMathematicalFormula(line) {
+            let formatted = line;
+            const replacements = {'±': '\\pm', '≠': '\\neq', '≤': '\\leq', '≥': '\\geq', '∙': '\\cdot', 'σ²': '\\sigma^2', 'χ²': '\\chi^2', 'α': '\\alpha', 'β': '\\beta', 'μ': '\\mu', 'H0:': 'H_0:', 'H1:': 'H_1:', 'μ0': '\\mu_0', 'μ1': '\\mu_1', 'μ2': '\\mu_2', 'p0': 'p_0', 'p1': 'p_1', 'p2': 'p_2', '̅': '\\bar{x}', '∑': '\\sum', '√': '\\sqrt'};
+            for (let [old, latex] of Object.entries(replacements)) { formatted = formatted.replaceAll(old, latex); }
+            if (formatted.includes('=') || formatted.includes('\\')) {
+                if (formatted.includes(':') && !formatted.includes('H_')) {
+                    const parts = formatted.split(':');
+                    if (parts.length === 2) { return `<strong>${escapeHtml(parts[0])}:</strong> $${parts[1].trim()}$`; }
+                }
+                return `$${formatted}$`;
+            }
+            return escapeHtml(formatted);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // File Upload Functions
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            const mainFileUpload = document.getElementById('main-file-upload');
+            dropZone.addEventListener('click', () => mainFileUpload.click());
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+            dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); const files = Array.from(e.dataTransfer.files); uploadFiles(files); });
+            mainFileUpload.addEventListener('change', (e) => { const files = Array.from(e.target.files); uploadFiles(files); });
+        }
+
+        function uploadFiles(files) {
+            if (!files || files.length === 0) return;
+            const statusContainer = document.getElementById('main-upload-status');
+            statusContainer.innerHTML = '';
+            files.forEach((file, index) => { uploadSingleFile(file, statusContainer, index); });
+        }
+
+        function uploadSingleFile(file, statusContainer, index) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('title', file.name);
+            const statusDiv = document.createElement('div');
+            statusDiv.innerHTML = `<div class="status-message" style="background: #e3f2fd; color: #1976d2; border: 1px solid #bbdefb;">📤 Uploading ${file.name}...</div>`;
+            statusContainer.appendChild(statusDiv);
+            fetch('/bot/upload', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    statusDiv.innerHTML = `<div class="status-message status-error">❌ ${file.name}: ${data.error}</div>`;
+                } else {
+                    statusDiv.innerHTML = `<div class="status-message status-success">✅ ${file.name} uploaded successfully! (${data.chunks_count} chunks)</div>`;
+                    loadDocumentsList();
+                }
+            })
+            .catch(err => {
+                statusDiv.innerHTML = `<div class="status-message status-error">❌ ${file.name}: Upload failed</div>`;
+            });
+        }
+
+        // Sidebar Upload
+        document.getElementById('upload-btn').addEventListener('click', () => {
+            const file = document.getElementById('file-upload').files[0];
+            if (!file) { showSidebarStatus('Please select a file first.', 'error'); return; }
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('title', file.name);
+            const btn = document.getElementById('upload-btn');
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+            fetch('/bot/upload', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) { showSidebarStatus(`Upload failed: ${data.error}`, 'error'); } else { showSidebarStatus(`✅ ${data.message}`, 'success'); document.getElementById('file-upload').value = ''; loadDocumentsList(); }
+            })
+            .catch(err => { showSidebarStatus(`Upload error: ${err.message}`, 'error'); })
+            .finally(() => { btn.disabled = false; btn.textContent = 'Upload File'; });
+        });
+
+        function showSidebarStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('upload-status');
+            statusDiv.innerHTML = `<div class="status-message status-${type}" style="font-size: 0.8rem; margin: 5px 0;">${message}</div>`;
+            setTimeout(() => { statusDiv.innerHTML = ''; }, 5000);
+        }
+
+        // Chat Functions
+        function appendMessage(content, sender, sourceInfo = null) {
+            const chatBox = document.getElementById('chat-box');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender + '-message');
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('message-content');
+            if (sender === 'bot') {
+                contentDiv.innerHTML = `<div class="math-content tex2jax_process">${content}</div>`;
+                if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                    MathJax.typesetPromise([contentDiv])
+                        .then(() => { chatBox.scrollTop = chatBox.scrollHeight; })
+                        .catch((err) => { console.error('MathJax rendering error for chat message:', err); contentDiv.textContent = content; chatBox.scrollTop = chatBox.scrollHeight; });
+                } else {
+                    contentDiv.textContent = content;
+                }
+            } else {
+                contentDiv.textContent = content;
+            }
+            messageDiv.appendChild(contentDiv);
+            if (sourceInfo && sender === 'bot') {
+                const sourceDiv = document.createElement('div');
+                sourceDiv.classList.add('source-info');
+                sourceDiv.textContent = sourceInfo;
+                messageDiv.appendChild(sourceDiv);
+            }
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typing-indicator').style.display = 'block';
+            document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+        }
+
+        function hideTyping() {
+            document.getElementById('typing-indicator').style.display = 'none';
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const text = input.value.trim();
+            if (!text) return;
+            sendBtn.disabled = true;
+            input.disabled = true;
+            appendMessage(text, 'user');
+            input.value = '';
+            showTyping();
+            fetch('/bot/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, session_id: sessionId }) })
+            .then(res => res.json())
+            .then(data => {
+                hideTyping();
+                if (data.error) { appendMessage(`⚠️ Error: ${data.error}`, 'bot'); } else { appendMessage(data.reply, 'bot', data.source_info); }
+            })
+            .catch(err => {
+                hideTyping();
+                appendMessage('⚠️ Error connecting to server.', 'bot');
+                console.error('Chat error:', err);
+            })
+            .finally(() => {
+                sendBtn.disabled = false;
+                input.disabled = false;
+                input.focus();
+            });
+        }
+
+        document.getElementById('send-btn').addEventListener('click', sendMessage);
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+        });
+    </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistical Bot Assistant</title>
+    
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            }
+        };
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.0/es5/tex-mml-chtml.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .app-container {
+            display: flex;
+            height: 100vh;
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 300px;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            text-align: center;
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .sidebar-nav {
+            padding: 20px 0;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            background: none;
+            color: white;
+            width: 100%;
+            text-align: left;
+            font-size: 1rem;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            background: #34495e;
+            padding-left: 30px;
+        }
+
+        .nav-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-right: 4px solid #fff;
+        }
+
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 1.2rem;
+        }
+
+        /* Upload Section */
+        .upload-section {
+            padding: 20px;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .upload-section h3 {
+            margin-bottom: 15px;
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .file-input-wrapper {
+            margin-bottom: 15px;
+        }
+
+        .file-input input[type="file"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            background: #34495e;
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .upload-btn {
+            width: 100%;
+            padding: 10px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #219a52;
+        }
+
+        .upload-btn:disabled {
+            background: #7f8c8d;
+            cursor: not-allowed;
+        }
+
+        /* Documents List */
+        .documents-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .document-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-bottom: 1px solid #34495e;
+        }
+
+        .document-item:hover {
+            background: #34495e;
+            padding-left: 30px;
+        }
+
+        .document-item.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-right: 4px solid #fff;
+        }
+
+        .document-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            font-size: 0.9rem;
+            word-break: break-word;
+        }
+
+        .document-meta {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+
+        .main-header {
+            padding: 20px 30px;
+            background: white;
+            border-bottom: 1px solid #e9ecef;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .main-header h2 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin: 0;
+        }
+
+        .main-body {
+            flex: 1;
+            padding: 0;
+            overflow: hidden;
+            display: flex; /* Ensure inner content is also a flex container */
+            flex-direction: column;
+        }
+
+        /* Chat Interface */
+        .chat-interface {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-box {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin: 15px 0;
+            max-width: 80%;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-message {
+            margin-left: auto;
+            text-align: right;
+        }
+
+        .user-message .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 20px 20px 5px 20px;
+            display: inline-block;
+        }
+
+        .bot-message {
+            margin-right: auto;
+        }
+
+        .bot-message .message-content {
+            background: white;
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 20px 20px 20px 5px;
+            border: 1px solid #e2e8f0;
+            display: inline-block;
+        }
+
+        .source-info {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+        }
+
+        .input-area {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        #user-input {
+            flex: 1;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 16px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        #user-input:focus {
+            border-color: #667eea;
+        }
+
+        #send-btn {
+            padding: 15px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        #send-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        #send-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Document Viewer */
+        .document-viewer {
+            height: 100%;
+            display: none;
+            flex-direction: column;
+        }
+
+        .document-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: white;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .document-content h1, .document-content h2, .document-content h3 {
+            color: #2c3e50;
+            margin: 20px 0 15px 0;
+        }
+
+        .document-content p {
+            margin: 15px 0;
+            text-align: justify;
+        }
+
+        /* Mathematical formula styling */
+        .formula-container {
+            background: #f8f9ff;
+            border: 1px solid #e3f2fd;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Times New Roman', serif;
+        }
+        
+        .document-frame {
+            width: 100%;
+            height: calc(100% - 150px); /* Adjust height to accommodate header and buttons */
+            border: none;
+        }
+
+        .math-content {
+            font-family: 'Times New Roman', serif;
+            line-height: 2;
+            font-size: 1.1rem;
+        }
+
+        .chapter-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .formula-section {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .view-toggle-btn {
+            padding: 8px 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background: #f1f1f1;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .view-toggle-btn:hover {
+            background: #e9e9e9;
+        }
+
+        /* Improve readability for statistical formulas */
+        .mjx-chtml {
+            font-size: 1.1em !important;
+        }
+
+        /* Upload View */
+        .upload-view {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            flex-direction: column;
+            background: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .upload-drop-zone {
+            border: 3px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 40px;
+            background: #f8f9ff;
+            transition: all 0.3s;
+            cursor: pointer;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .upload-drop-zone:hover {
+            border-color: #5a67d8;
+            background: #f0f4ff;
+        }
+
+        .upload-drop-zone.dragover {
+            border-color: #4c51bf;
+            background: #e6fffa;
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 10px 20px;
+            margin: 10px 0;
+        }
+
+        .typing-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.5s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: translateY(0);
+            }
+            30% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .status-message {
+            padding: 10px 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .app-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 40vh;
+            }
+            
+            .documents-list {
+                max-height: 200px;
+            }
+
+            .message {
+                max-width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>📊 StatBot</h1>
+                <p>Statistical Assistant</p>
+            </div>
+
+            <div class="sidebar-nav">
+                <button class="nav-item active" onclick="showView('chat')">
+                    <span class="nav-icon">💬</span>
+                    Chat Bot
+                </button>
+                <button class="nav-item" onclick="showView('upload')">
+                    <span class="nav-icon">📤</span>
+                    Upload Files
+                </button>
+            </div>
+
+            <div class="upload-section">
+                <h3>Quick Upload</h3>
+                <div class="file-input-wrapper">
+                    <input type="file" id="file-upload" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg">
+                </div>
+                <button id="upload-btn" class="upload-btn">Upload File</button>
+                <div id="upload-status"></div>
+            </div>
+
+            <div class="documents-list" id="documents-list">
+                <div style="padding: 20px; text-align: center; opacity: 0.7; font-size: 0.9rem;">
+                    No documents uploaded yet
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="main-header">
+                <h2 id="main-title">Chat with Statistical Bot</h2>
+            </div>
+
+            <div class="main-body">
+                <div id="chat-view" class="chat-interface">
+                    <div id="chat-box">
+                        <div class="bot-message">
+                            <div class="message-content">
+                                Hello! I'm your Statistical Bot Assistant. Upload documents to build a knowledge base, then ask me any statistics-related questions!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="typing-indicator" id="typing-indicator">
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                        <span style="margin-left: 10px; color: #666;">Bot is typing...</span>
+                    </div>
+
+                    <div class="input-area">
+                        <input type="text" id="user-input" placeholder="Ask your statistics question...">
+                        <button id="send-btn">Send</button>
+                    </div>
+                </div>
+
+                <div id="upload-view" class="upload-view">
+                    <div class="upload-drop-zone" id="drop-zone">
+                        <div class="upload-icon">📁</div>
+                        <h3>Drop files here or click to browse</h3>
+                        <p>Supported formats: PDF, DOCX, TXT, Images</p>
+                        <input type="file" id="main-file-upload" accept=".pdf,.docx,.txt,.png,.jpg,.jpeg" style="display: none;" multiple>
+                    </div>
+                    <div id="main-upload-status" style="margin-top: 20px;"></div>
+                </div>
+
+                <div id="document-view" class="document-viewer">
+                    <div class="document-content" id="document-content">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentView = 'chat';
+        let sessionId = generateSessionId();
+        let documentsData = [];
+        let currentDocumentView = 'summary'; // New global variable
+
+        function generateSessionId() {
+            return 'session_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDocumentsList();
+            setupDragAndDrop();
+            document.getElementById('user-input').focus();
+        });
+
+        function showView(view) {
+            document.getElementById('chat-view').style.display = 'none';
+            document.getElementById('upload-view').style.display = 'none';
+            document.getElementById('document-view').style.display = 'none';
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.document-item').forEach(item => item.classList.remove('active'));
+
+            currentView = view;
+            
+            if (view === 'chat') {
+                document.getElementById('chat-view').style.display = 'flex';
+                document.getElementById('main-title').textContent = 'Chat with Statistical Bot';
+                document.querySelector('[onclick="showView(\'chat\')"]').classList.add('active');
+                setTimeout(() => document.getElementById('user-input').focus(), 100);
+            } else if (view === 'upload') {
+                document.getElementById('upload-view').style.display = 'flex';
+                document.getElementById('main-title').textContent = 'Upload Documents';
+                document.querySelector('[onclick="showView(\'upload\')"]').classList.add('active');
+            }
+        }
+
+        function showDocument(docIndex) {
+            const doc = documentsData[docIndex];
+            if (!doc) return;
+
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.document-item').forEach(item => item.classList.remove('active'));
+            document.querySelector(`[data-doc-id="${docIndex}"]`).classList.add('active');
+
+            document.getElementById('chat-view').style.display = 'none';
+            document.getElementById('upload-view').style.display = 'none';
+            document.getElementById('document-view').style.display = 'flex';
+
+            document.getElementById('main-title').textContent = doc.title;
+            currentView = 'document';
+            
+            // Default to summary view
+            loadDocumentContent(docIndex, 'summary');
+        }
+
+        function loadDocumentsList() {
+            fetch('/bot/knowledge-base')
+                .then(res => res.json())
+                .then(data => {
+                    documentsData = data.entries || [];
+                    updateDocumentsList();
+                })
+                .catch(err => {
+                    console.error('Error loading documents:', err);
+                });
+        }
+
+        function updateDocumentsList() {
+            const container = document.getElementById('documents-list');
+            
+            if (documentsData.length === 0) {
+                container.innerHTML = `
+                    <div style="padding: 20px; text-align: center; opacity: 0.7; font-size: 0.9rem;">
+                        No documents uploaded yet
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = documentsData.map((doc, index) => `
+                <div class="document-item" data-doc-id="${index}" onclick="showDocument(${index})">
+                    <div class="document-title">${doc.title}</div>
+                    <div class="document-meta">${doc.content_type.toUpperCase()} • ${doc.chunks_count} chunks</div>
+                </div>
+            `).join('');
+        }
+
+function viewDocument(filename, viewType = 'summary') {
+    const modal = document.getElementById('document-modal');
+    const content = document.getElementById('document-content');
+    const title = document.getElementById('document-title');
+    const viewSummaryBtn = document.getElementById('view-summary-btn');
+    const viewFullBtn = document.getElementById('view-full-btn');
+    
+    title.textContent = filename;
+    content.innerHTML = '<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading...</div>';
+    modal.style.display = 'block';
+    
+    // Update button states
+    viewSummaryBtn.classList.toggle('active', viewType === 'summary');
+    viewFullBtn.classList.toggle('active', viewType === 'full');
+    
+    if (viewType === 'full') {
+        // For full view, embed the actual document
+        const fileExtension = filename.split('.').pop().toLowerCase();
+        
+        if (fileExtension === 'pdf') {
+            // For PDF files, use an iframe or object to display the PDF
+            content.innerHTML = `
+                <div style="width: 100%; height: 600px; border: 1px solid #ddd;">
+                    <iframe 
+                        src="/original-document/${encodeURIComponent(filename)}" 
+                        width="100%" 
+                        height="100%" 
+                        style="border: none;">
+                        <p>Your browser doesn't support PDFs. 
+                           <a href="/original-document/${encodeURIComponent(filename)}" target="_blank">Download the PDF</a>
+                        </p>
+                    </iframe>
+                </div>
+                <div class="mt-3 text-center">
+                    <a href="/original-document/${encodeURIComponent(filename)}" 
+                       target="_blank" 
+                       class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> Open in New Tab
+                    </a>
+                    <a href="/original-document/${encodeURIComponent(filename)}" 
+                       download 
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </div>
+            `;
+        } else if (fileExtension === 'docx') {
+            // For DOCX files, we'll show the extracted content with better formatting
+            // since browsers can't natively display DOCX files
+            fetch('/bot/document-content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    filename: filename,
+                    view_type: 'full'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    content.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    return;
+                }
+                
+                // Format the content better for DOCX
+                const formattedContent = data.content
+                    .replace(/\n\n/g, '</p><p>')
+                    .replace(/\n/g, '<br>');
+                
+                content.innerHTML = `
+                    <div style="max-height: 600px; overflow-y: auto; padding: 20px; background: white; border: 1px solid #ddd;">
+                        <p>${formattedContent}</p>
+                    </div>
+                    <div class="mt-3 text-center">
+                        <a href="/original-document/${encodeURIComponent(filename)}" 
+                           download 
+                           class="btn btn-primary">
+                            <i class="fas fa-download"></i> Download Original
+                        </a>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                content.innerHTML = '<div class="alert alert-danger">Error loading document content</div>';
+            });
+        } else if (['png', 'jpg', 'jpeg', 'tiff', 'bmp'].includes(fileExtension)) {
+            // For image files
+            content.innerHTML = `
+                <div style="text-align: center;">
+                    <img src="/original-document/${encodeURIComponent(filename)}" 
+                         style="max-width: 100%; max-height: 600px; border: 1px solid #ddd;" 
+                         alt="${filename}">
+                </div>
+                <div class="mt-3 text-center">
+                    <a href="/original-document/${encodeURIComponent(filename)}" 
+                       target="_blank" 
+                       class="btn btn-primary">
+                        <i class="fas fa-external-link-alt"></i> View Full Size
+                    </a>
+                    <a href="/original-document/${encodeURIComponent(filename)}" 
+                       download 
+                       class="btn btn-secondary ml-2">
+                        <i class="fas fa-download"></i> Download
+                    </a>
+                </div>
+            `;
+        } else if (fileExtension === 'txt') {
+            // For text files, show the content with proper formatting
+            fetch('/bot/document-content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    filename: filename,
+                    view_type: 'full'
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    content.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                    return;
+                }
+                
+                content.innerHTML = `
+                    <pre style="max-height: 600px; overflow-y: auto; padding: 20px; background: #f8f9fa; border: 1px solid #ddd; white-space: pre-wrap;">${data.content}</pre>
+                    <div class="mt-3 text-center">
+                        <a href="/original-document/${encodeURIComponent(filename)}" 
+                           download 
+                           class="btn btn-primary">
+                            <i class="fas fa-download"></i> Download Original
+                        </a>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                content.innerHTML = '<div class="alert alert-danger">Error loading document content</div>';
+            });
+        }
+    } else {
+        // For summary view, use the existing API
+        fetch('/bot/document-content', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                filename: filename,
+                view_type: 'summary'
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                content.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                return;
+            }
+            
+            content.innerHTML = `
+                <div class="document-summary">
+                    <div class="mb-3">
+                        <small class="text-muted">
+                            Document: ${data.filename} | 
+                            Chunks: ${data.total_chunks} | 
+                            Length: ${data.total_length.toLocaleString()} characters
+                            ${data.has_math ? ' | Contains Mathematical Content' : ''}
+                        </small>
+                    </div>
+                    <div style="max-height: 500px; overflow-y: auto; padding: 15px; background: #f8f9fa; border-left: 4px solid #007bff;">
+                        ${data.content.replace(/\n/g, '<br>')}
+                    </div>
+                </div>
+            `;
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            content.innerHTML = '<div class="alert alert-danger">Error loading document summary</div>';
+        });
     }
+}
 
-    function appendMessage(sender, text) {
-      const div = document.createElement("div");
-      div.className = sender === "user" ? "user-msg" : "bot-msg";
-      div.innerHTML = text;
-      chatWindow.appendChild(div);
-      MathJax.typesetPromise(); // Re-render LaTeX after message
-      chatWindow.scrollTop = chatWindow.scrollHeight;
+        function toggleDocumentView(docIndex) {
+            const newViewType = currentDocumentView === 'summary' ? 'full' : 'summary';
+            loadDocumentContent(docIndex, newViewType);
+        }
+
+        function processStatisticalContent(content) {
+            let lines = content.split('\n');
+            let processedLines = [];
+            for (let line of lines) {
+                line = line.trim();
+                if (!line) { processedLines.push('<br>'); continue; }
+                if (line.includes('Chapter') && (line.includes('Formulas') || line.includes('Page'))) {
+                    processedLines.push(`<div class="chapter-title">${line}</div>`);
+                    continue;
+                }
+                if (containsFormula(line)) {
+                    const formattedLine = formatMathematicalFormula(line);
+                    processedLines.push(`<div class="formula-container">${formattedLine}</div>`);
+                } else {
+                    processedLines.push(`<p>${escapeHtml(line)}</p>`);
+                }
+            }
+            return processedLines.join('\n');
+        }
+
+        function containsFormula(line) {
+            const formulaIndicators = ['=', '±', '≠', '≤', '≥', '∑', '√', 'σ', 'μ', '̅', 'α', 'β', 'χ²', 'H0:', 'H1:', 'df =', '∙', '²', '⁄', 'TI-Calculator', 'Excel:'];
+            return formulaIndicators.some(indicator => line.includes(indicator));
+        }
+
+        function formatMathematicalFormula(line) {
+            let formatted = line;
+            const replacements = {'±': '\\pm', '≠': '\\neq', '≤': '\\leq', '≥': '\\geq', '∙': '\\cdot', 'σ²': '\\sigma^2', 'χ²': '\\chi^2', 'α': '\\alpha', 'β': '\\beta', 'μ': '\\mu', 'H0:': 'H_0:', 'H1:': 'H_1:', 'μ0': '\\mu_0', 'μ1': '\\mu_1', 'μ2': '\\mu_2', 'p0': 'p_0', 'p1': 'p_1', 'p2': 'p_2', '̅': '\\bar{x}', '∑': '\\sum', '√': '\\sqrt'};
+            for (let [old, latex] of Object.entries(replacements)) { formatted = formatted.replaceAll(old, latex); }
+            if (formatted.includes('=') || formatted.includes('\\')) {
+                if (formatted.includes(':') && !formatted.includes('H_')) {
+                    const parts = formatted.split(':');
+                    if (parts.length === 2) { return `<strong>${escapeHtml(parts[0])}:</strong> $${parts[1].trim()}$`; }
+                }
+                return `$${formatted}$`;
+            }
+            return escapeHtml(formatted);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // File Upload Functions
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('drop-zone');
+            const mainFileUpload = document.getElementById('main-file-upload');
+            dropZone.addEventListener('click', () => mainFileUpload.click());
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+            dropZone.addEventListener('dragleave', () => { dropZone.classList.remove('dragover'); });
+            dropZone.addEventListener('drop', (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); const files = Array.from(e.dataTransfer.files); uploadFiles(files); });
+            mainFileUpload.addEventListener('change', (e) => { const files = Array.from(e.target.files); uploadFiles(files); });
+        }
+
+        function uploadFiles(files) {
+            if (!files || files.length === 0) return;
+            const statusContainer = document.getElementById('main-upload-status');
+            statusContainer.innerHTML = '';
+            files.forEach((file, index) => { uploadSingleFile(file, statusContainer, index); });
+        }
+
+        function uploadSingleFile(file, statusContainer, index) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('title', file.name);
+            const statusDiv = document.createElement('div');
+            statusDiv.innerHTML = `<div class="status-message" style="background: #e3f2fd; color: #1976d2; border: 1px solid #bbdefb;">📤 Uploading ${file.name}...</div>`;
+            statusContainer.appendChild(statusDiv);
+            fetch('/bot/upload', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) {
+                    statusDiv.innerHTML = `<div class="status-message status-error">❌ ${file.name}: ${data.error}</div>`;
+                } else {
+                    statusDiv.innerHTML = `<div class="status-message status-success">✅ ${file.name} uploaded successfully! (${data.chunks_count} chunks)</div>`;
+                    loadDocumentsList();
+                }
+            })
+            .catch(err => {
+                statusDiv.innerHTML = `<div class="status-message status-error">❌ ${file.name}: Upload failed</div>`;
+            });
+        }
+
+        // Sidebar Upload
+        document.getElementById('upload-btn').addEventListener('click', () => {
+            const file = document.getElementById('file-upload').files[0];
+            if (!file) { showSidebarStatus('Please select a file first.', 'error'); return; }
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('title', file.name);
+            const btn = document.getElementById('upload-btn');
+            btn.disabled = true;
+            btn.textContent = 'Uploading...';
+            fetch('/bot/upload', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.error) { showSidebarStatus(`Upload failed: ${data.error}`, 'error'); } else { showSidebarStatus(`✅ ${data.message}`, 'success'); document.getElementById('file-upload').value = ''; loadDocumentsList(); }
+            })
+            .catch(err => { showSidebarStatus(`Upload error: ${err.message}`, 'error'); })
+            .finally(() => { btn.disabled = false; btn.textContent = 'Upload File'; });
+        });
+
+        function showSidebarStatus(message, type = 'success') {
+            const statusDiv = document.getElementById('upload-status');
+            statusDiv.innerHTML = `<div class="status-message status-${type}" style="font-size: 0.8rem; margin: 5px 0;">${message}</div>`;
+            setTimeout(() => { statusDiv.innerHTML = ''; }, 5000);
+        }
+
+        // Chat Functions
+        function appendMessage(content, sender, sourceInfo = null) {
+            const chatBox = document.getElementById('chat-box');
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender + '-message');
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('message-content');
+            if (sender === 'bot') {
+                contentDiv.innerHTML = `<div class="math-content tex2jax_process">${content}</div>`;
+                if (typeof MathJax !== 'undefined' && MathJax.typesetPromise) {
+                    MathJax.typesetPromise([contentDiv])
+                        .then(() => { chatBox.scrollTop = chatBox.scrollHeight; })
+                        .catch((err) => { console.error('MathJax rendering error for chat message:', err); contentDiv.textContent = content; chatBox.scrollTop = chatBox.scrollHeight; });
+                } else {
+                    contentDiv.textContent = content;
+                }
+            } else {
+                contentDiv.textContent = content;
+            }
+            messageDiv.appendChild(contentDiv);
+            if (sourceInfo && sender === 'bot') {
+                const sourceDiv = document.createElement('div');
+                sourceDiv.classList.add('source-info');
+                sourceDiv.textContent = sourceInfo;
+                messageDiv.appendChild(sourceDiv);
+            }
+            chatBox.appendChild(messageDiv);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function showTyping() {
+            document.getElementById('typing-indicator').style.display = 'block';
+            document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight;
+        }
+
+        function hideTyping() {
+            document.getElementById('typing-indicator').style.display = 'none';
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            const text = input.value.trim();
+            if (!text) return;
+            sendBtn.disabled = true;
+            input.disabled = true;
+            appendMessage(text, 'user');
+            input.value = '';
+            showTyping();
+            fetch('/bot/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: text, session_id: sessionId }) })
+            .then(res => res.json())
+            .then(data => {
+                hideTyping();
+                if (data.error) { appendMessage(`⚠️ Error: ${data.error}`, 'bot'); } else { appendMessage(data.reply, 'bot', data.source_info); }
+            })
+            .catch(err => {
+                hideTyping();
+                appendMessage('⚠️ Error connecting to server.', 'bot');
+                console.error('Chat error:', err);
+            })
+            .finally(() => {
+                sendBtn.disabled = false;
+                input.disabled = false;
+                input.focus();
+            });
+        }
+
+        document.getElementById('send-btn').addEventListener('click', sendMessage);
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+        });
+       function loadDocumentContent(docIndex, viewType) {
+    const doc = documentsData[docIndex];
+    if (!doc) return;
+    
+    currentDocumentView = viewType;
+    
+    document.getElementById('document-content').innerHTML = `
+        <h1>${doc.title}</h1>
+        <div style="text-align: center; padding: 40px; color: #666;">
+            <div class="typing-dots" style="justify-content: center; margin-bottom: 10px;">
+                <span></span><span></span><span></span>
+            </div>
+            Loading ${viewType} content...
+        </div>
+    `;
+
+    if (viewType === 'full') {
+        // For full document view, display the original file
+        displayFullDocument(doc, docIndex);
+    } else {
+        // For summary view, fetch processed content
+        fetch('/bot/document-content', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename: doc.title, view_type: viewType })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                document.getElementById('document-content').innerHTML = `<h1>${doc.title}</h1><div class="status-message status-error">❌ Error: ${data.error}</div>`;
+            } else {
+                displayDocumentContent(doc, data);
+            }
+        })
+        .catch(err => {
+            console.error('Error loading document content:', err);
+            document.getElementById('document-content').innerHTML = `<h1>${doc.title}</h1><div class="status-message status-error">🔌 Connection Error</div>`;
+        });
     }
+}
 
-    form.onsubmit = async (e) => {
-      e.preventDefault();
-      const question = input.value.trim();
-      if (!question) return;
+function displayFullDocument(doc, docIndex) {
+    const contentContainer = document.getElementById('document-content');
+    const fileExtension = doc.title.split('.').pop().toLowerCase();
+    
+    // Create the header with document info and toggle button
+    const headerHTML = `
+        <h1>${doc.title}</h1>
+        <div style="margin: 20px 0; padding: 15px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+            <strong>📄 Type:</strong> ${doc.content_type.toUpperCase()} &nbsp;&nbsp;
+            <strong>📅 Uploaded:</strong> ${doc.created_at} &nbsp;&nbsp;
+            <strong>📏 Chunks:</strong> ${doc.chunks_count}
+        </div>
+        <div style="text-align: right; margin-bottom: 10px;">
+            <button class="view-toggle-btn" onclick="loadDocumentContent(${docIndex}, 'summary')">
+                View Summary
+            </button>
+        </div>
+    `;
+    
+    if (fileExtension === 'pdf') {
+        contentContainer.innerHTML = `
+            ${headerHTML}
+            <div style="width: 100%; height: 600px; border: 1px solid #ddd; border-radius: 8px; overflow: hidden;">
+                <iframe 
+                    src="/original-document/${encodeURIComponent(doc.title)}" 
+                    width="100%" 
+                    height="100%" 
+                    style="border: none;">
+                    <p style="padding: 20px; text-align: center;">
+                        Your browser doesn't support PDF viewing. 
+                        <a href="/original-document/${encodeURIComponent(doc.title)}" target="_blank" style="color: #667eea;">
+                            Click here to open in a new tab
+                        </a>
+                    </p>
+                </iframe>
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="/original-document/${encodeURIComponent(doc.title)}" 
+                   target="_blank" 
+                   class="view-toggle-btn" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+                    🔗 Open in New Tab
+                </a>
+                <a href="/original-document/${encodeURIComponent(doc.title)}" 
+                   download 
+                   class="view-toggle-btn" style="text-decoration: none; display: inline-block;">
+                    📥 Download
+                </a>
+            </div>
+        `;
+    } else if (fileExtension === 'docx') {
+        // For DOCX, show a message and download option since browsers can't display DOCX directly
+        contentContainer.innerHTML = `
+            ${headerHTML}
+            <div style="text-align: center; padding: 60px; border: 2px dashed #667eea; border-radius: 8px; background: #f8f9ff;">
+                <div style="font-size: 4rem; color: #667eea; margin-bottom: 20px;">📄</div>
+                <h3 style="color: #2c3e50; margin-bottom: 15px;">DOCX Document</h3>
+                <p style="color: #666; margin-bottom: 25px;">
+                    DOCX files cannot be displayed directly in the browser.<br>
+                    Please download the file to view it in Microsoft Word or a compatible application.
+                </p>
+                <a href="/original-document/${encodeURIComponent(doc.title)}" 
+                   download 
+                   class="view-toggle-btn" 
+                   style="text-decoration: none; display: inline-block; padding: 12px 24px; background: #667eea; color: white; border-radius: 5px;">
+                    📥 Download DOCX File
+                </a>
+            </div>
+        `;
+    } else if (['png', 'jpg', 'jpeg', 'tiff', 'bmp'].includes(fileExtension)) {
+        contentContainer.innerHTML = `
+            ${headerHTML}
+            <div style="text-align: center; border: 1px solid #ddd; border-radius: 8px; padding: 20px; background: white;">
+                <img src="/original-document/${encodeURIComponent(doc.title)}" 
+                     style="max-width: 100%; max-height: 600px; border-radius: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" 
+                     alt="${doc.title}"
+                     onload="this.style.opacity=1" 
+                     style="opacity: 0; transition: opacity 0.3s;">
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <a href="/original-document/${encodeURIComponent(doc.title)}" 
+                   target="_blank" 
+                   class="view-toggle-btn" style="text-decoration: none; display: inline-block; margin-right: 10px;">
+                    🔍 View Full Size
+                </a>
+                <a href="/original-document/${encodeURIComponent(doc.title)}" 
+                   download 
+                   class="view-toggle-btn" style="text-decoration: none; display: inline-block;">
+                    📥 Download
+                </a>
+            </div>
+        `;
+    } else if (fileExtension === 'txt') {
+        // For text files, show content in a text area
+        fetch('/bot/original-document/' + encodeURIComponent(doc.title))
+            .then(response => response.text())
+            .then(textContent => {
+                contentContainer.innerHTML = `
+                    ${headerHTML}
+                    <div style="border: 1px solid #ddd; border-radius: 8px; background: white;">
+                        <pre style="max-height: 600px; overflow-y: auto; padding: 20px; margin: 0; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.5;">${textContent}</pre>
+                    </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <a href="/original-document/${encodeURIComponent(doc.title)}" 
+                           download 
+                           class="view-toggle-btn" style="text-decoration: none; display: inline-block;">
+                            📥 Download
+                        </a>
+                    </div>
+                `;
+            })
+            .catch(error => {
+                console.error('Error loading text file:', error);
+                contentContainer.innerHTML = `
+                    ${headerHTML}
+                    <div class="status-message status-error">❌ Error loading text file</div>
+                `;
+            });
+    } else {
+        // For other file types, show download option
+        contentContainer.innerHTML = `
+            ${headerHTML}
+            <div style="text-align: center; padding: 60px; border: 2px dashed #667eea; border-radius: 8px; background: #f8f9ff;">
+                <div style="font-size: 4rem; color: #667eea; margin-bottom: 20px;">📎</div>
+                <h3 style="color: #2c3e50; margin-bottom: 15px;">${fileExtension.toUpperCase()} File</h3>
+                <p style="color: #666; margin-bottom: 25px;">
+                    This file type cannot be displayed directly in the browser.<br>
+                    Please download the file to view it with the appropriate application.
+                </p>
+                <a href="/original-document/${encodeURIComponent(doc.title)}" 
+                   download 
+                   class="view-toggle-btn" 
+                   style="text-decoration: none; display: inline-block; padding: 12px 24px; background: #667eea; color: white; border-radius: 5px;">
+                    📥 Download File
+                </a>
+            </div>
+        `;
+    }
+}
 
-      appendMessage("user", question);
-      addToHistory(question);
-      input.value = "";
-
-      const res = await fetch("/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: question })
-      });
-
-      const data = await res.json();
-      appendMessage("bot", data.reply);
-    };
-
-    renderHistory();
-  </script>
+function displayDocumentContent(doc, data) {
+    const contentContainer = document.getElementById('document-content');
+    
+    // This is the summary view
+    const processedContent = processStatisticalContent(data.content);
+    contentContainer.innerHTML = `
+        <h1>${doc.title}</h1>
+        <div style="margin: 20px 0; padding: 15px; background: #e3f2fd; border-radius: 8px; border-left: 4px solid #2196f3;">
+            <strong>📄 Type:</strong> ${doc.content_type.toUpperCase()} &nbsp;&nbsp;
+            <strong>📊 Chunks:</strong> ${data.total_chunks} &nbsp;&nbsp;
+            <strong>📅 Uploaded:</strong> ${doc.created_at} &nbsp;&nbsp;
+            <strong>📏 Length:</strong> ${data.total_length.toLocaleString()} characters
+            ${data.has_math ? ' &nbsp;&nbsp;<strong>🧮 Contains Math:</strong> Yes' : ''}
+        </div>
+        <div style="text-align: right; margin-bottom: 10px;">
+            <button class="view-toggle-btn" onclick="loadDocumentContent(${documentsData.findIndex(d => d.title === doc.title)}, 'full')">
+                View Full Document
+            </button>
+        </div>
+        <div class="formula-section">
+            <div class="math-content tex2jax_process">
+                ${processedContent}
+            </div>
+        </div>
+        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #28a745;">
+            <h4 style="color: #155724; margin-bottom: 10px;">💡 How to use this document:</h4>
+            <p style="margin: 0; color: #155724;">You can ask specific questions about these formulas and concepts in the chat interface. The bot will search through all ${data.total_chunks} chunks to provide relevant answers.</p>
+        </div>
+    `;
+    
+    if (data.has_math) {
+        MathJax.typesetPromise([contentContainer]);
+    }
+}
+    </script>
 </body>
 </html>

@@ -1,12 +1,12 @@
 # analyzer/analyzer.py
 
-from flask import Blueprint, render_template, request, redirect, url_for, session, flash
+from flask import *
 import pandas as pd
 import os
 from werkzeug.utils import secure_filename
 from .analysis import *
 import uuid
-import mysql.connector
+from flask_mysqldb import MySQL
 from flask import send_from_directory, abort
 analyzer_bp = Blueprint('analyzer', __name__, template_folder='../templates')
 
@@ -15,14 +15,17 @@ REPORT_FOLDER = 'static/reports'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 os.makedirs(REPORT_FOLDER, exist_ok=True)
 
-def get_db_connection():
-    return mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='sandhika',
-        database='project',
-        auth_plugin='mysql_native_password'
-    )
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = '##Ss090503##'
+app.config['MYSQL_DB'] = 'stat_analyser'
+
+mysql=MySQL(app)
+
+
 
 @analyzer_bp.route('/dashboard', methods=['GET', 'POST'])
 def dashboard():
@@ -145,13 +148,12 @@ def analyze():
         result['summary_html'] = "<p>Unsupported task.</p>"
 
     # Save user activity
-    dbconn = get_db_connection()
-    cursor = dbconn.cursor()
+    cursor = mysql.connection.cursor()
     cursor.execute(
         'INSERT INTO user_activity (user_id, filename, analysis_type, report_path) VALUES (%s, %s, %s, %s)',
         (session.get('user_id'), filename, task, report_path)
     )
-    dbconn.commit()
+    mysql.connection.commit()
 
     print("SUMMARY:", result['summary_html'])
     print("OBJECTIVE:", result['objective'])
@@ -197,8 +199,7 @@ def download_report(filename):
 def history():
     if 'loggedin' not in session:
         return redirect(url_for('login'))
-    dbconn = get_db_connection()
-    cursor = dbconn.cursor(dictionary=True)  # ✅ This is the key
+    cursor =mysql.connection.cursor(dictionary=True)  # ✅ This is the key
     cursor.execute(
     'SELECT filename, analysis_type, timestamp, report_path FROM user_activity WHERE user_id = %s ORDER BY timestamp DESC',
     (session.get('user_id'),)

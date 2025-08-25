@@ -1,19 +1,22 @@
 # File: quiz/quiz_app.py
-from flask import Blueprint, render_template, request, session
+from flask import *
+from  flask_mysqldb import MySQL
 from quiz.utils import extract_text_from_pdf_advanced, generate_mcqs_from_textbook, generate_questions_from_prompt
-import mysql.connector
+
 
 quiz_bp = Blueprint('quiz', __name__)
 
-# ✅ Local DB config inside this module (to avoid circular import)
-def get_db_connection():
-    return mysql.connector.connect(
-        host='localhost',
-        user='root',
-        password='sandhika',
-        database='project',
-        auth_plugin='mysql_native_password'
-    )
+
+app = Flask(__name__)
+app.secret_key = 'your_secret_key'
+
+app.config['MYSQL_HOST'] = 'localhost'
+app.config['MYSQL_USER'] = 'root'
+app.config['MYSQL_PASSWORD'] = '##Ss090503##'
+app.config['MYSQL_DB'] = 'stat_analyser'
+
+mysql=MySQL(app)
+
 
 @quiz_bp.route('/', methods=['GET'])
 def quiz_home():
@@ -69,15 +72,13 @@ def submit_quiz():
 
     if email:  # Ensure user is logged in
         try:
-            dbconn = get_db_connection()
-            cursor = dbconn.cursor()
+            cursor = mysql.connection.cursor()
             cursor.execute(
                 "INSERT INTO quiz_scores (email, topic, score, total) VALUES (%s, %s, %s, %s)",
                 (email, topic, score, len(questions))
             )
-            dbconn.commit()
+            mysql.connection.commit()
             cursor.close()
-            dbconn.close()
         except Exception as e:
             print("DB Error:", e)
 

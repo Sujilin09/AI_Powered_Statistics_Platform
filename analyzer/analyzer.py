@@ -199,7 +199,7 @@ def download_report(filename):
 def history():
     if 'loggedin' not in session:
         return redirect(url_for('login'))
-    cursor =mysql.connection.cursor(dictionary=True)  # ✅ This is the key
+    cursor =mysql.connection.cursor()  
     cursor.execute(
     'SELECT filename, analysis_type, timestamp, report_path FROM user_activity WHERE user_id = %s ORDER BY timestamp DESC',
     (session.get('user_id'),)

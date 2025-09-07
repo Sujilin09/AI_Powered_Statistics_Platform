@@ -36,8 +36,10 @@ def start_quiz():
 
     elif quiz_type == 'prompt':
         prompt = request.form['prompt']
-        questions = generate_questions_from_prompt(prompt)
+        result = generate_questions_from_prompt(prompt)
+        questions = result.get("questions", [])
         session['quiz_topic'] = prompt
+
 
     else:
         questions = []

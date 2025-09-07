@@ -1,0 +1,23 @@
+[33mcommit f1d9913061d493f91694a1002e0298d9b046411b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32msujilin_bot[m[33m)[m
+Author: Sujilin09 <sujilinsvj@gmail.com>
+Date:   Mon Aug 25 12:29:02 2025 +0530
+
+    feat: Add .gitignore to exclude .env file
+
+[33mcommit 05b708cc95838f987fecba373b8b15a629511689[m
+Author: Sujilin09 <sujilinsvj@gmail.com>
+Date:   Mon Aug 25 12:01:01 2025 +0530
+
+    feat: Remove API key from history
+
+[33mcommit c9130f9c31c3230b1dcbc9bd20829e5246bf19a9[m
+Author: Sujilin09 <sujilinsvj@gmail.com>
+Date:   Mon Aug 25 11:43:30 2025 +0530
+
+    bot updates
+
+[33mcommit 4bd0149985cad1cb007da334687ef08c980cd10a[m[33m ([m[1;31morigin/sujilin_bot[m[33m, [m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmain[m[33m)[m
+Author: sandhika <sandhika.g@msds.christuniversity.in>
+Date:   Sun Aug 24 19:01:28 2025 +0530
+
+    Initial commit

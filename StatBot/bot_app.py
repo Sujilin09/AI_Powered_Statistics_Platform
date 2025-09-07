@@ -17,6 +17,10 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 from openai import OpenAI
+import pandas as pd
+import faiss
+import os
+from dotenv import load_dotenv
 
 # --- Blueprint Setup ---
 # This blueprint will be imported and registered in your main app.py
@@ -27,11 +31,34 @@ bot_bp = Blueprint(
     static_folder='../static'
 )
 
+# --- Blueprint Setup ---
 print("[INFO] Loading Sentence Transformer model for Bot...")
 sentence_model = SentenceTransformer('all-MiniLM-L6-v2')
 print("[SUCCESS] Bot's Sentence Transformer model loaded.")
-import os
-from dotenv import load_dotenv
+
+# --- NEW: Load Concepts and Build FAISS Index (runs once on startup) ---
+try:
+    print("[INFO] Loading statistical concepts for Quick Response mode...")
+    df = pd.read_csv("statbot_real_500_concepts.csv")
+    concepts = df["concept"].tolist()
+    descriptions = df["description"].tolist()
+
+    print("[INFO] Creating embeddings for concepts...")
+    concept_embeddings = sentence_model.encode(concepts, convert_to_numpy=True)
+
+    print("[INFO] Building FAISS index...")
+    embedding_dim = concept_embeddings.shape[1]
+    faiss_index = faiss.IndexFlatL2(embedding_dim)
+    faiss_index.add(concept_embeddings)
+    print("[SUCCESS] FAISS index for Quick Response is ready.")
+except FileNotFoundError:
+    print("[ERROR] 'statbot_real_500_concepts.csv' not found. Quick Response mode will be disabled.")
+    faiss_index = None # Disable the feature if file is missing
+except Exception as e:
+    print(f"[ERROR] Failed to initialize FAISS index: {e}")
+    faiss_index = None
+
+
 
 # This line loads the variables from your .env file
 load_dotenv()
@@ -43,7 +70,6 @@ SERPAPI_KEY = os.getenv("SERPAPI_KEY")
 
 # Use the new uppercase variables to initialize your clients
 client = OpenAI(api_key=OPENAI_API_KEY)
-
 
 # The SERPAPI_KEY is now also set as an environment variable
 
@@ -472,6 +498,8 @@ def upload_file():
         print(f"[ERROR] Upload error: {e}")
         traceback.print_exc()
         return jsonify({'error': f'Upload failed: {str(e)}'}), 500
+    
+
 
 @bot_bp.route('/chat', methods=['POST'])
 def chat():
@@ -539,6 +567,7 @@ def chat():
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
+
 @bot_bp.route('/knowledge-base')
 def get_knowledge_base():
     """Get knowledge base entries for current user"""
@@ -570,6 +599,7 @@ def get_knowledge_base():
     except Exception as e:
         print(f"[ERROR] Knowledge base retrieval error: {e}")
         return jsonify({'error': str(e)}), 500
+    
 
 @bot_bp.route('/document-content', methods=['POST'])
 def get_document_content():

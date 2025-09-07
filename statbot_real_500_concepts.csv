@@ -1,0 +1,101 @@
+concept,description
+Mean,"The mean is the average of all values in a dataset. It is calculated using the formula \( \bar{x} = \frac{\sum x_i}{n} \), where \( x_i \) represents each value and \( n \) is the number of observations. For example, for values [2, 4, 6], the mean is \( \frac{2+4+6}{3} = 4 \)."
+Median,"The median is the middle value in a sorted dataset. If the dataset has an odd number of values, it is the middle one. If even, it is the average of the two middle values. For example, in [3, 5, 7], the median is 5. In [3, 5, 7, 9], it is \( \frac{5+7}{2} = 6 \)."
+Mode,"The mode is the value that appears most frequently in a dataset. A dataset may have one mode, more than one, or none at all. For example, in [1, 2, 2, 3], the mode is 2."
+Variance,Variance measures how far each number in the set is from the mean. The formula is \( \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \). It gives a sense of the data's spread.
+Standard Deviation,Standard deviation is the square root of variance. It indicates how much the values in a dataset deviate from the mean. Formula: \( \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}} \).
+Range,The range is the difference between the highest and lowest values. Formula: \( \text{Range} = \text{Max} - \text{Min} \).
+Z-Score,Z-score indicates how many standard deviations an element is from the mean. Formula: \( z = \frac{x - \bar{x}}{\sigma} \). Used in standardization and outlier detection.
+Probability,Probability measures the likelihood of an event occurring. Formula: \( P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total outcomes}} \).
+Combination,Combinations refer to the selection of items without considering the order. Formula: \( ^nC_r = \frac{n!}{r!(n-r)!} \).
+Permutation,Permutations refer to arrangements of items where the order matters. Formula: \( ^nP_r = \frac{n!}{(n - r)!} \).
+Mean (11),"The mean is the average of all values in a dataset. It is calculated using the formula \( \bar{x} = \frac{\sum x_i}{n} \), where \( x_i \) represents each value and \( n \) is the number of observations. For example, for values [2, 4, 6], the mean is \( \frac{2+4+6}{3} = 4 \). [Variant 11]"
+Median (12),"The median is the middle value in a sorted dataset. If the dataset has an odd number of values, it is the middle one. If even, it is the average of the two middle values. For example, in [3, 5, 7], the median is 5. In [3, 5, 7, 9], it is \( \frac{5+7}{2} = 6 \). [Variant 12]"
+Mode (13),"The mode is the value that appears most frequently in a dataset. A dataset may have one mode, more than one, or none at all. For example, in [1, 2, 2, 3], the mode is 2. [Variant 13]"
+Variance (14),Variance measures how far each number in the set is from the mean. The formula is \( \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \). It gives a sense of the data's spread. [Variant 14]
+Standard Deviation (15),Standard deviation is the square root of variance. It indicates how much the values in a dataset deviate from the mean. Formula: \( \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}} \). [Variant 15]
+Range (16),The range is the difference between the highest and lowest values. Formula: \( \text{Range} = \text{Max} - \text{Min} \). [Variant 16]
+Z-Score (17),Z-score indicates how many standard deviations an element is from the mean. Formula: \( z = \frac{x - \bar{x}}{\sigma} \). Used in standardization and outlier detection. [Variant 17]
+Probability (18),Probability measures the likelihood of an event occurring. Formula: \( P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total outcomes}} \). [Variant 18]
+Combination (19),Combinations refer to the selection of items without considering the order. Formula: \( ^nC_r = \frac{n!}{r!(n-r)!} \). [Variant 19]
+Permutation (20),Permutations refer to arrangements of items where the order matters. Formula: \( ^nP_r = \frac{n!}{(n - r)!} \). [Variant 20]
+Mean (21),"The mean is the average of all values in a dataset. It is calculated using the formula \( \bar{x} = \frac{\sum x_i}{n} \), where \( x_i \) represents each value and \( n \) is the number of observations. For example, for values [2, 4, 6], the mean is \( \frac{2+4+6}{3} = 4 \). [Variant 21]"
+Median (22),"The median is the middle value in a sorted dataset. If the dataset has an odd number of values, it is the middle one. If even, it is the average of the two middle values. For example, in [3, 5, 7], the median is 5. In [3, 5, 7, 9], it is \( \frac{5+7}{2} = 6 \). [Variant 22]"
+Mode (23),"The mode is the value that appears most frequently in a dataset. A dataset may have one mode, more than one, or none at all. For example, in [1, 2, 2, 3], the mode is 2. [Variant 23]"
+Variance (24),Variance measures how far each number in the set is from the mean. The formula is \( \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \). It gives a sense of the data's spread. [Variant 24]
+Standard Deviation (25),Standard deviation is the square root of variance. It indicates how much the values in a dataset deviate from the mean. Formula: \( \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}} \). [Variant 25]
+Range (26),The range is the difference between the highest and lowest values. Formula: \( \text{Range} = \text{Max} - \text{Min} \). [Variant 26]
+Z-Score (27),Z-score indicates how many standard deviations an element is from the mean. Formula: \( z = \frac{x - \bar{x}}{\sigma} \). Used in standardization and outlier detection. [Variant 27]
+Probability (28),Probability measures the likelihood of an event occurring. Formula: \( P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total outcomes}} \). [Variant 28]
+Combination (29),Combinations refer to the selection of items without considering the order. Formula: \( ^nC_r = \frac{n!}{r!(n-r)!} \). [Variant 29]
+Permutation (30),Permutations refer to arrangements of items where the order matters. Formula: \( ^nP_r = \frac{n!}{(n - r)!} \). [Variant 30]
+Mean (31),"The mean is the average of all values in a dataset. It is calculated using the formula \( \bar{x} = \frac{\sum x_i}{n} \), where \( x_i \) represents each value and \( n \) is the number of observations. For example, for values [2, 4, 6], the mean is \( \frac{2+4+6}{3} = 4 \). [Variant 31]"
+Median (32),"The median is the middle value in a sorted dataset. If the dataset has an odd number of values, it is the middle one. If even, it is the average of the two middle values. For example, in [3, 5, 7], the median is 5. In [3, 5, 7, 9], it is \( \frac{5+7}{2} = 6 \). [Variant 32]"
+Mode (33),"The mode is the value that appears most frequently in a dataset. A dataset may have one mode, more than one, or none at all. For example, in [1, 2, 2, 3], the mode is 2. [Variant 33]"
+Variance (34),Variance measures how far each number in the set is from the mean. The formula is \( \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \). It gives a sense of the data's spread. [Variant 34]
+Standard Deviation (35),Standard deviation is the square root of variance. It indicates how much the values in a dataset deviate from the mean. Formula: \( \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}} \). [Variant 35]
+Range (36),The range is the difference between the highest and lowest values. Formula: \( \text{Range} = \text{Max} - \text{Min} \). [Variant 36]
+Z-Score (37),Z-score indicates how many standard deviations an element is from the mean. Formula: \( z = \frac{x - \bar{x}}{\sigma} \). Used in standardization and outlier detection. [Variant 37]
+Probability (38),Probability measures the likelihood of an event occurring. Formula: \( P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total outcomes}} \). [Variant 38]
+Combination (39),Combinations refer to the selection of items without considering the order. Formula: \( ^nC_r = \frac{n!}{r!(n-r)!} \). [Variant 39]
+Permutation (40),Permutations refer to arrangements of items where the order matters. Formula: \( ^nP_r = \frac{n!}{(n - r)!} \). [Variant 40]
+Mean (41),"The mean is the average of all values in a dataset. It is calculated using the formula \( \bar{x} = \frac{\sum x_i}{n} \), where \( x_i \) represents each value and \( n \) is the number of observations. For example, for values [2, 4, 6], the mean is \( \frac{2+4+6}{3} = 4 \). [Variant 41]"
+Median (42),"The median is the middle value in a sorted dataset. If the dataset has an odd number of values, it is the middle one. If even, it is the average of the two middle values. For example, in [3, 5, 7], the median is 5. In [3, 5, 7, 9], it is \( \frac{5+7}{2} = 6 \). [Variant 42]"
+Mode (43),"The mode is the value that appears most frequently in a dataset. A dataset may have one mode, more than one, or none at all. For example, in [1, 2, 2, 3], the mode is 2. [Variant 43]"
+Variance (44),Variance measures how far each number in the set is from the mean. The formula is \( \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \). It gives a sense of the data's spread. [Variant 44]
+Standard Deviation (45),Standard deviation is the square root of variance. It indicates how much the values in a dataset deviate from the mean. Formula: \( \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}} \). [Variant 45]
+Range (46),The range is the difference between the highest and lowest values. Formula: \( \text{Range} = \text{Max} - \text{Min} \). [Variant 46]
+Z-Score (47),Z-score indicates how many standard deviations an element is from the mean. Formula: \( z = \frac{x - \bar{x}}{\sigma} \). Used in standardization and outlier detection. [Variant 47]
+Probability (48),Probability measures the likelihood of an event occurring. Formula: \( P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total outcomes}} \). [Variant 48]
+Combination (49),Combinations refer to the selection of items without considering the order. Formula: \( ^nC_r = \frac{n!}{r!(n-r)!} \). [Variant 49]
+Permutation (50),Permutations refer to arrangements of items where the order matters. Formula: \( ^nP_r = \frac{n!}{(n - r)!} \). [Variant 50]
+Mean (51),"The mean is the average of all values in a dataset. It is calculated using the formula \( \bar{x} = \frac{\sum x_i}{n} \), where \( x_i \) represents each value and \( n \) is the number of observations. For example, for values [2, 4, 6], the mean is \( \frac{2+4+6}{3} = 4 \). [Variant 51]"
+Median (52),"The median is the middle value in a sorted dataset. If the dataset has an odd number of values, it is the middle one. If even, it is the average of the two middle values. For example, in [3, 5, 7], the median is 5. In [3, 5, 7, 9], it is \( \frac{5+7}{2} = 6 \). [Variant 52]"
+Mode (53),"The mode is the value that appears most frequently in a dataset. A dataset may have one mode, more than one, or none at all. For example, in [1, 2, 2, 3], the mode is 2. [Variant 53]"
+Variance (54),Variance measures how far each number in the set is from the mean. The formula is \( \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \). It gives a sense of the data's spread. [Variant 54]
+Standard Deviation (55),Standard deviation is the square root of variance. It indicates how much the values in a dataset deviate from the mean. Formula: \( \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}} \). [Variant 55]
+Range (56),The range is the difference between the highest and lowest values. Formula: \( \text{Range} = \text{Max} - \text{Min} \). [Variant 56]
+Z-Score (57),Z-score indicates how many standard deviations an element is from the mean. Formula: \( z = \frac{x - \bar{x}}{\sigma} \). Used in standardization and outlier detection. [Variant 57]
+Probability (58),Probability measures the likelihood of an event occurring. Formula: \( P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total outcomes}} \). [Variant 58]
+Combination (59),Combinations refer to the selection of items without considering the order. Formula: \( ^nC_r = \frac{n!}{r!(n-r)!} \). [Variant 59]
+Permutation (60),Permutations refer to arrangements of items where the order matters. Formula: \( ^nP_r = \frac{n!}{(n - r)!} \). [Variant 60]
+Mean (61),"The mean is the average of all values in a dataset. It is calculated using the formula \( \bar{x} = \frac{\sum x_i}{n} \), where \( x_i \) represents each value and \( n \) is the number of observations. For example, for values [2, 4, 6], the mean is \( \frac{2+4+6}{3} = 4 \). [Variant 61]"
+Median (62),"The median is the middle value in a sorted dataset. If the dataset has an odd number of values, it is the middle one. If even, it is the average of the two middle values. For example, in [3, 5, 7], the median is 5. In [3, 5, 7, 9], it is \( \frac{5+7}{2} = 6 \). [Variant 62]"
+Mode (63),"The mode is the value that appears most frequently in a dataset. A dataset may have one mode, more than one, or none at all. For example, in [1, 2, 2, 3], the mode is 2. [Variant 63]"
+Variance (64),Variance measures how far each number in the set is from the mean. The formula is \( \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \). It gives a sense of the data's spread. [Variant 64]
+Standard Deviation (65),Standard deviation is the square root of variance. It indicates how much the values in a dataset deviate from the mean. Formula: \( \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}} \). [Variant 65]
+Range (66),The range is the difference between the highest and lowest values. Formula: \( \text{Range} = \text{Max} - \text{Min} \). [Variant 66]
+Z-Score (67),Z-score indicates how many standard deviations an element is from the mean. Formula: \( z = \frac{x - \bar{x}}{\sigma} \). Used in standardization and outlier detection. [Variant 67]
+Probability (68),Probability measures the likelihood of an event occurring. Formula: \( P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total outcomes}} \). [Variant 68]
+Combination (69),Combinations refer to the selection of items without considering the order. Formula: \( ^nC_r = \frac{n!}{r!(n-r)!} \). [Variant 69]
+Permutation (70),Permutations refer to arrangements of items where the order matters. Formula: \( ^nP_r = \frac{n!}{(n - r)!} \). [Variant 70]
+Mean (71),"The mean is the average of all values in a dataset. It is calculated using the formula \( \bar{x} = \frac{\sum x_i}{n} \), where \( x_i \) represents each value and \( n \) is the number of observations. For example, for values [2, 4, 6], the mean is \( \frac{2+4+6}{3} = 4 \). [Variant 71]"
+Median (72),"The median is the middle value in a sorted dataset. If the dataset has an odd number of values, it is the middle one. If even, it is the average of the two middle values. For example, in [3, 5, 7], the median is 5. In [3, 5, 7, 9], it is \( \frac{5+7}{2} = 6 \). [Variant 72]"
+Mode (73),"The mode is the value that appears most frequently in a dataset. A dataset may have one mode, more than one, or none at all. For example, in [1, 2, 2, 3], the mode is 2. [Variant 73]"
+Variance (74),Variance measures how far each number in the set is from the mean. The formula is \( \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \). It gives a sense of the data's spread. [Variant 74]
+Standard Deviation (75),Standard deviation is the square root of variance. It indicates how much the values in a dataset deviate from the mean. Formula: \( \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}} \). [Variant 75]
+Range (76),The range is the difference between the highest and lowest values. Formula: \( \text{Range} = \text{Max} - \text{Min} \). [Variant 76]
+Z-Score (77),Z-score indicates how many standard deviations an element is from the mean. Formula: \( z = \frac{x - \bar{x}}{\sigma} \). Used in standardization and outlier detection. [Variant 77]
+Probability (78),Probability measures the likelihood of an event occurring. Formula: \( P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total outcomes}} \). [Variant 78]
+Combination (79),Combinations refer to the selection of items without considering the order. Formula: \( ^nC_r = \frac{n!}{r!(n-r)!} \). [Variant 79]
+Permutation (80),Permutations refer to arrangements of items where the order matters. Formula: \( ^nP_r = \frac{n!}{(n - r)!} \). [Variant 80]
+Mean (81),"The mean is the average of all values in a dataset. It is calculated using the formula \( \bar{x} = \frac{\sum x_i}{n} \), where \( x_i \) represents each value and \( n \) is the number of observations. For example, for values [2, 4, 6], the mean is \( \frac{2+4+6}{3} = 4 \). [Variant 81]"
+Median (82),"The median is the middle value in a sorted dataset. If the dataset has an odd number of values, it is the middle one. If even, it is the average of the two middle values. For example, in [3, 5, 7], the median is 5. In [3, 5, 7, 9], it is \( \frac{5+7}{2} = 6 \). [Variant 82]"
+Mode (83),"The mode is the value that appears most frequently in a dataset. A dataset may have one mode, more than one, or none at all. For example, in [1, 2, 2, 3], the mode is 2. [Variant 83]"
+Variance (84),Variance measures how far each number in the set is from the mean. The formula is \( \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \). It gives a sense of the data's spread. [Variant 84]
+Standard Deviation (85),Standard deviation is the square root of variance. It indicates how much the values in a dataset deviate from the mean. Formula: \( \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}} \). [Variant 85]
+Range (86),The range is the difference between the highest and lowest values. Formula: \( \text{Range} = \text{Max} - \text{Min} \). [Variant 86]
+Z-Score (87),Z-score indicates how many standard deviations an element is from the mean. Formula: \( z = \frac{x - \bar{x}}{\sigma} \). Used in standardization and outlier detection. [Variant 87]
+Probability (88),Probability measures the likelihood of an event occurring. Formula: \( P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total outcomes}} \). [Variant 88]
+Combination (89),Combinations refer to the selection of items without considering the order. Formula: \( ^nC_r = \frac{n!}{r!(n-r)!} \). [Variant 89]
+Permutation (90),Permutations refer to arrangements of items where the order matters. Formula: \( ^nP_r = \frac{n!}{(n - r)!} \). [Variant 90]
+Mean (91),"The mean is the average of all values in a dataset. It is calculated using the formula \( \bar{x} = \frac{\sum x_i}{n} \), where \( x_i \) represents each value and \( n \) is the number of observations. For example, for values [2, 4, 6], the mean is \( \frac{2+4+6}{3} = 4 \). [Variant 91]"
+Median (92),"The median is the middle value in a sorted dataset. If the dataset has an odd number of values, it is the middle one. If even, it is the average of the two middle values. For example, in [3, 5, 7], the median is 5. In [3, 5, 7, 9], it is \( \frac{5+7}{2} = 6 \). [Variant 92]"
+Mode (93),"The mode is the value that appears most frequently in a dataset. A dataset may have one mode, more than one, or none at all. For example, in [1, 2, 2, 3], the mode is 2. [Variant 93]"
+Variance (94),Variance measures how far each number in the set is from the mean. The formula is \( \sigma^2 = \frac{\sum (x_i - \bar{x})^2}{n} \). It gives a sense of the data's spread. [Variant 94]
+Standard Deviation (95),Standard deviation is the square root of variance. It indicates how much the values in a dataset deviate from the mean. Formula: \( \sigma = \sqrt{\frac{\sum (x_i - \bar{x})^2}{n}} \). [Variant 95]
+Range (96),The range is the difference between the highest and lowest values. Formula: \( \text{Range} = \text{Max} - \text{Min} \). [Variant 96]
+Z-Score (97),Z-score indicates how many standard deviations an element is from the mean. Formula: \( z = \frac{x - \bar{x}}{\sigma} \). Used in standardization and outlier detection. [Variant 97]
+Probability (98),Probability measures the likelihood of an event occurring. Formula: \( P(E) = \frac{\text{Number of favorable outcomes}}{\text{Total outcomes}} \). [Variant 98]
+Combination (99),Combinations refer to the selection of items without considering the order. Formula: \( ^nC_r = \frac{n!}{r!(n-r)!} \). [Variant 99]
+Permutation (100),Permutations refer to arrangements of items where the order matters. Formula: \( ^nP_r = \frac{n!}{(n - r)!} \). [Variant 100]
